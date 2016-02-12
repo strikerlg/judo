@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>One Page Wonder - Start Bootstrap Template</title>
+    <title>Profile</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -33,8 +33,8 @@
     <header class="header-image" style="background: url('images/wrestler.jpg') no-repeat center center scroll;">
         <div class="headline">
             <div class="container">
-                <h1>Wrestler Alias</h1>
-                <h2>Wrestler Full Name</h2>
+                <h1>Athlete Alias</h1>
+                <h2>Athlete Full Name</h2>
             </div>
         </div>
     </header>
@@ -47,7 +47,7 @@
         <!-- First Featurette -->
         <div class="featurette" id="about">
             <img class="featurette-image img-circle img-responsive pull-right" src="images/cage.jpg">
-            <h2 class="featurette-heading">Wrestler Name
+            <h2 class="featurette-heading">Athlete Name
                 <span class="text-muted">Will Catch Your Eye</span>
             </h2>
             <h4>Height:</h4>

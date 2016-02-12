@@ -20,7 +20,7 @@ if(isset($_GET['logout'])){
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Wrestling</title>
+    <title>Judo</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -84,7 +84,7 @@ if(isset($_GET['logout'])){
 								<div class="col-sm-10">
 									<span class="btn btn-success fileinput-button">
 								        <i class="glyphicon glyphicon-plus"></i>
-								        <span>Select files...</span>
+								        <span>Select image...</span>
 								        <!-- The file input field used as target for the file upload widget -->
 								        <input id="upload" type="file" name="files[]" multiple>
 								    </span>
@@ -151,17 +151,17 @@ if(isset($_GET['logout'])){
         <div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">
-                    Welcome to Modern Wrestling
+                    Welcome to Judo dojo
                 </h1>
             </div>
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h4><i class="fa fa-fw fa-check"></i> View wrestler stats</h4>
+                        <h4><i class="fa fa-fw fa-check"></i> View athlete stats</h4>
                     </div>
                     <div class="panel-body">
-                        <p>View the statistics of different wrestlers and their achievments. Can't find yourself in our records? Fill out our form to get started!</p>
-                        <a href="people.php" class="btn btn-default">View Wrestlers</a>
+                        <p>View the statistics of different athletes and their achievments. Can't find yourself in our records? Fill out our form to get started!</p>
+                        <a href="people.php" class="btn btn-default">View athletes</a>
                         <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Form</button>
                     </div>
                 </div>
@@ -287,21 +287,35 @@ if(isset($_GET['logout'])){
 	$(function () {
 	    'use strict';
 	    // Change this to the location of your server-side upload handler:
-	    var url = 'images/uploads/';
+	    var url = 'images/profile/';
+        var pid;
 	    $('#upload').fileupload({
 	        url: url,
 	        dataType: 'json',
 	        add: function(e, data){
+                console.log(data.files[0].name);
 	        	data.context = $('#save');
 	        	data.context.click(function () {
                     data.context.text('Uploading...').replaceAll($(this));
-                    data.submit();
+                    $.post("profileHandler.php", {name: $("#inputName").val(), height: $('#inputHeight').val(), weight: $('#inputWeight').val()}, function(data2){
+                        if(data2.hasOwnProperty("error")){
+                            alert(data2.error);
+                        }
+                        else if(data2.result != "false"){
+                            pid = data2.pid;
+                            data.submit();
+                        }
+                    });
                 });
 	        },
 	        done: function (e, data) {
+                var pic;
 	            $.each(data.result.files, function (index, file) {
+                    pic = file.name;
 	                $('<p/>').text(file.name).appendTo('#files');
 	            });
+                $.post("profileHandler.php", {pid: pid, pic: pic});
+
 	            $('#save').text('Saved');
 	        },
 	        progressall: function (e, data) {

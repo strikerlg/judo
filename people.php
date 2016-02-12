@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Modern Business - Start Bootstrap Template</title>
+    <title>Athletes</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -54,18 +54,32 @@
 
         <!-- Projects Row -->
         <?php
-		for ($i=0; $i < 6; $i++) { 
-			echo "<div class=\"well col-md-4 img-portfolio\">
-				<div class=\"col-md-8 col-md-offset-2\">
-					<a href=\"wrestler.php\">
-                    	<img class=\"img-responsive img-hover\" src=\"http://placehold.it/200x200\" alt=\"\">
-                	</a>
-				</div>
-                <h3>
-                    <a href=\"wrestler.php\">Wrestler Name</a>
-                </h3>
-            </div>";
-		}
+        $mysql = new mysqli("localhost", "root", "", "judo");
+        if($mysql->connect_error){
+            die('Connect Error (' . $mysql->connect_errno . ') '
+            . $mysql->connect_error);
+        }
+        $sql = "SELECT * FROM profiles";
+        $conn = $mysql->query($sql);
+        if($conn->num_rows > 0){
+            while($row = $conn->fetch_assoc()){
+                echo "<div class=\"well col-md-4 img-portfolio\">
+                    <div class=\"col-md-8 col-md-offset-2\">
+                        <a href=\"wrestler.php?id=" . $row["pid"] . "\">
+                            <img class=\"img-responsive img-hover\" src=\"images/profile/files/thumbnail/" . $row["pic"] . "\" alt=\"\">
+                        </a>
+                    </div>
+                    <h3>
+                        <a href=\"wrestler.php?id=" . $row["pid"] . "\">" . $row["name"] . "</a>
+                    </h3>
+                </div>";
+            }
+        }
+        else{
+            echo "<p>No athletes at this time.</p>";
+        }
+        
+        $mysql->close();
 	?>
 
         <hr>
