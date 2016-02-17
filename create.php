@@ -97,18 +97,48 @@
                         <h4>Categories</h4>
                         <form>
                         	<div class="form-group">
-                        		<label for="numCat">Number of Categories:</label>
-                        		<select class="form-control" id="numCat">
-                        			<option>1</option>
-                        			<option>2</option>
-                        			<option>3</option>
-                        			<option>4</option>
-                        			<option>5</option>
-                        		</select>
+                        		<label for="numCat">Number of Filters:</label>
+                                <input class="form-control" type="number" id="numCat"/>
                         	</div>
                         	<div class="form-group" id="catNames">
                         		<label for="firstName">Category Names:</label>
-                        		<input type="text" class="form-control" id="firstName" placeholder="First Category" />
+                                <div class="row">
+                                    <div class="input-group" id="firstCat">
+                                        <input type="text" aria-label="Text input with segmented button dropdown" aria-describedby="subcat1" class="form-control"/>
+                                        <div class="input-group-btn">
+                                            <button aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
+                                                Subcategories: <span class="caret"></span>
+                                                <span class="sr-only">Toggle Dropdown</span>
+                                            </button>
+                                            <ul class="dropdown-menu scrollable-menu">
+                                                <li><a href="#" class="add-subcat">0</a></li>
+                                                <li><a href="#" class="add-subcat">1</a></li>
+                                                <li><a href="#" class="add-subcat">2</a></li>
+                                                <li><a href="#" class="add-subcat">3</a></li>
+                                                <li><a href="#" class="add-subcat">4</a></li>
+                                                <li><a href="#" class="add-subcat">5</a></li>
+                                                <li><a href="#" class="add-subcat">6</a></li>
+                                                <li><a href="#" class="add-subcat">7</a></li>
+                                                <li><a href="#" class="add-subcat">8</a></li>
+                                                <li><a href="#" class="add-subcat">9</a></li>
+                                                <li><a href="#" class="add-subcat">10</a></li>
+                                                <li><a href="#" class="add-subcat">11</a></li>
+                                                <li><a href="#" class="add-subcat">12</a></li>
+                                                <li><a href="#" class="add-subcat">13</a></li>
+                                                <li><a href="#" class="add-subcat">14</a></li>
+                                                <li><a href="#" class="add-subcat">15</a></li>
+                                                <li><a href="#" class="add-subcat">16</a></li>
+                                                <li><a href="#" class="add-subcat">17</a></li>
+                                                <li><a href="#" class="add-subcat">18</a></li>
+                                                <li><a href="#" class="add-subcat">19</a></li>
+                                                <li><a href="#" class="add-subcat">20</a></li>
+                                                <li><a href="#" class="add-subcat">21</a></li>
+                                                <li><a href="#" class="add-subcat">22</a></li>
+                                                <li><a href="#" class="add-subcat">23</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                         	</div>
                         </form>
                     </div>
@@ -130,7 +160,7 @@
                     <div class="tab-pane fade" id="service-four">
                         <h4>Description</h4>
                         <form>
-                        	<textarea class="form-control" placeholder="description..." rows="3"></textarea>
+                        	<textarea class="form-control" placeholder="description..." rows="3" id="description"></textarea>
                         </form>
                     </div>
                 </div>
@@ -139,7 +169,7 @@
         </div>
 
         <!-- Service List -->
-        <!-- The circle icons use Font Awesome's stacked icon classes. For more information, visit http://fontawesome.io/examples/ -->
+        <!--
         <div class="row">
             <div class="col-lg-12">
                 <h2 class="page-header">Summary</h2>
@@ -259,6 +289,7 @@
                 </div>
             </div>
         </div>
+        -->
         <!-- /.row -->
 
         <hr>
@@ -289,18 +320,80 @@
     <script src="js/bootstrap.min.js"></script>
     
     <script>
+        var holder = "<div class=\"row\"><div class=\"input-group\">"+
+                                    "<input type=\"text\" aria-label=\"Text input with segmented button dropdown\" aria-describedby=\"subcat1\" class=\"form-control\"/>" +
+                                    "<div class=\"input-group-btn\">"+
+                                        "<button aria-expanded=\"false\" aria-haspopup=\"true\" data-toggle=\"dropdown\" class=\"btn btn-default dropdown-toggle\" type=\"button\">"+
+                                            "Subcategories: <span class=\"caret\"></span>"+
+                                            "<span class=\"sr-only\">Toggle Dropdown</span>"+
+                                        "</button>"+
+                                        "<ul class=\"dropdown-menu\">"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">0</a></li>"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">1</a></li>"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">2</a></li>"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">3</a></li>"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">4</a></li>"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">5</a></li>"+
+                                            "<li><a href=\"#\" class=\"add-subcat\">6</a></li>"+
+                                        "</ul>"+
+                                    "</div>"+
+                                "</div></div>";
+        var holder2 = "<div class=\"col-md-offset-1\"><div class=\"input-group\">"+
+                                    "<span class=\"input-group-addon\" id=\"subcat1\">Subcategorie Name:</span>" +
+                                    "<input type=\"text\" aria-label=\"Text input with segmented button dropdown\" aria-describedby=\"subcat1\" class=\"form-control\"/>" +
+                                "</div></div>";
+        $('#catNames').delegate('.add-subcat', 'click', function(e){
+            e.preventDefault();
+            var sub = parseInt($(this).text());
+            $(this).parent().parent().parent().parent().siblings('.col-md-offset-1').remove();
+            for(var i = 0; i < sub; i++){
+                $(holder2).animate('fade', 1000).appendTo($(this).parent().parent().parent().parent().parent());
+            }
+            console.log(sub);
+        });
+
     	var placehold = ["Second Category", "Third Category", "Fourth Category", "Fith Category"]
-    	$('#numCat option').click(function(e){
-    		var num = parseInt($('#numCat :selected').text());
-    		$('#firstName').siblings('input').each(function(){
-    			$(this).remove();
-    		});
+    	$('#numCat').change(function(e){
+            e.preventDefault();
+    		var num = $('#numCat').val();
+    		$('#firstCat').parent().siblings().remove();
     		for(var i = 0; i < num - 1; i++){
-    			$('<input type="text" class="form-control" placeholder="' + placehold[i] + '"/>').appendTo('#catNames');
+    			$(holder).animate('fade', 2000).appendTo('#catNames');
     		}
     	});
     	$('#datetimepicker1').datetimepicker();
     	$('#datetimepicker1').data("DateTimePicker").minDate(new Date());
+        $('#save').click(function(e){
+            var title = $('#title').val();
+            var org = $('#org').val();
+            var date = $('#datetimepicker1').data("DateTimePicker").date()
+            var desc = $('#description').val();
+            var firstCats = $('#catNames').children();
+
+            var category_settings = [];
+            firstCats.each(function(i){
+                var curr_sub = $(this);
+                console.log(curr_sub);
+                var obj = {title: curr_sub.find('input').val(), children: []};
+                //category_settings["category_" + i]["title"] = curr_sub.find('input').val();
+                if(curr_sub.children().length > 1){
+                    curr_sub.children('.col-md-offset-1').each(function(j){
+                        obj.children.push($(this).find('input').val());
+                    });
+                }
+                category_settings.push(obj);
+            });
+            $.post('eventHandler.php', {categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), description: desc}, function(data){
+                console.log(data);
+            })
+            /*add extra forwardslash to eneble debugging
+            console.log(JSON.stringify(category_settings));
+            console.log(title);
+            console.log(org);
+            console.log(date.format("YYYY-MM-DD HH:mm:ss"));
+            console.log(desc);
+            //*/
+        });
     </script>
 
 </body>

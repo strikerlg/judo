@@ -317,6 +317,9 @@ if(isset($_GET['logout'])){
                 $.post("profileHandler.php", {pid: pid, pic: pic});
 
 	            $('#save').text('Saved');
+                setTimeout(function(){
+                    $('#myModal').modal('hide');
+                }, 2000);
 	        },
 	        progressall: function (e, data) {
 	            var progress = parseInt(data.loaded / data.total * 100, 10);

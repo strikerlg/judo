@@ -66,7 +66,7 @@
                 echo "<div class=\"well col-md-4 img-portfolio\">
                     <div class=\"col-md-8 col-md-offset-2\">
                         <a href=\"wrestler.php?id=" . $row["pid"] . "\">
-                            <img class=\"img-responsive img-hover\" src=\"images/profile/files/thumbnail/" . $row["pic"] . "\" alt=\"\">
+                            <img class=\"img-responsive img-hover\" src=\"images/profile/files/thumbnail/" . $row["pic"] . "\" height=\"200px\" alt=\"\">
                         </a>
                     </div>
                     <h3>
