@@ -1,3 +1,36 @@
+<?php
+    $event_template = '<div class="col-md-8">
+
+                <!-- Event -->
+                <h2>
+                    <a href="#">Event Example</a>
+                </h2>
+                <p class="lead">
+                    by <a href="#">Generic Organization</a>
+                </p>
+                <p><i class="fa fa-clock-o"></i> On August 28, 2013 at 10:00 PM</p>
+                <hr>
+                <a href="blog-post.html">
+                    <img class="img-responsive img-hover" src="images/wrestling-tournament.png" alt="">
+                </a>
+                <hr>
+                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
+                <div class="btn-group" id="groupSelect" role="group" aria-label="...">
+                    <button data-expanded="false" type="button" class="btn btn-primary" id="expandong">View Bracket <i class="fa fa-angle-right"></i></a>
+                    
+                </div>
+                
+
+                <hr>';
+    $mysqli = new mysqli("localhost", "root", "", "judo");
+    if($mysqli->connect_error){
+        die('Connect Error (' . $mysqli->connect_errno . ') '
+        . $mysqli->connect_error);
+    }
+    $sql = "SELECT * FROM events";
+    $result = $mysqli->query($sql);
+    $numResults = $result->num_rows;
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,68 +86,35 @@
         <!-- /.row -->
 
         <div class="row">
-
-            <!-- Blog Entries Column -->
             <div class="col-md-8">
 
-                <!-- Event -->
-                <h2>
-                    <a href="#">Event Example</a>
-                </h2>
-                <p class="lead">
-                    by <a href="#">Generic Organization</a>
-                </p>
-                <p><i class="fa fa-clock-o"></i> On August 28, 2013 at 10:00 PM</p>
-                <hr>
-                <a href="blog-post.html">
-                    <img class="img-responsive img-hover" src="images/wrestling-tournament.png" alt="">
-                </a>
-                <hr>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
-                <div class="btn-group" id="groupSelect" role="group" aria-label="...">
-                	<button data-expanded="false" type="button" class="btn btn-primary" id="expandong">View Bracket <i class="fa fa-angle-right"></i></a>
-                	
-                </div>
-                
+                <?php
+                    while($row = $result->fetch_assoc()){
+                        echo '<div class="col-md-8">
 
-                <hr>
+                                <!-- Event -->
+                                <h2>
+                                    <a href="#">'. $row['title'] .'</a>
+                                </h2>
+                                <p class="lead">
+                                    by <a href="#">'. $row['organization'] .'</a>
+                                </p>
+                                <p><i class="fa fa-clock-o"></i> On '. $row['date'] .'</p>
+                                <hr>
+                                <a href="blog-post.html">
+                                    <img class="img-responsive img-hover" src="images/wrestling-tournament.png" alt="">
+                                </a>
+                                <hr>
+                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
+                                <div class="btn-group" id="groupSelect" role="group" aria-label="...">
+                                    <button data-expanded="false" type="button" class="btn btn-primary" id="expandong">View Bracket <i class="fa fa-angle-right"></i></a>
+                                    
+                                </div>
+                                
 
-                <!-- Second Event -->
-                <h2>
-                    <a href="#">Event Example</a>
-                </h2>
-                <p class="lead">
-                    by <a href="#">Generic Organization</a>
-                </p>
-                <p><i class="fa fa-clock-o"></i> On August 28, 2013 at 10:00 PM</p>
-                <hr>
-                <a href="blog-post.html">
-                    <img class="img-responsive img-hover" src="http://placehold.it/900x300" alt="">
-                </a>
-                <hr>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
-                <a class="btn btn-primary" href="#">View Bracket <i class="fa fa-angle-right"></i></a>
-
-                <hr>
-
-                <!-- Third Event -->
-                <h2>
-                    <a href="#">Event Example</a>
-                </h2>
-                <p class="lead">
-                    by <a href="#">Generic Organization</a>
-                </p>
-                <p><i class="fa fa-clock-o"></i> On August 28, 2013 at 10:00 PM</p>
-                <hr>
-                <a href="blog-post.html">
-                    <img class="img-responsive img-hover" src="http://placehold.it/900x300" alt="">
-                </a>
-                <hr>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
-                <a class="btn btn-primary" href="#">View Bracket <i class="fa fa-angle-right"></i></a>
-
-                <hr>
-
+                                <hr>';
+                    }
+                ?>
                 <!-- Pager -->
                 <ul class="pager">
                     <li class="previous">
@@ -124,66 +124,7 @@
                         <a href="#">Newer &rarr;</a>
                     </li>
                 </ul>
-
             </div>
-
-            <!-- Blog Sidebar Widgets Column -->
-            <div class="col-md-4">
-
-                <!-- Blog Search Well -->
-                <div class="well">
-                    <h4>Event Search</h4>
-                    <div class="input-group">
-                        <input type="text" class="form-control">
-                        <span class="input-group-btn">
-                            <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
-                        </span>
-                    </div>
-                    <!-- /.input-group -->
-                </div>
-
-                <!-- Blog Categories Well -->
-                <div class="well">
-                    <h4>Event Dates</h4>
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <ul class="list-unstyled">
-                                <li><a href="#">Spring 2015</a>
-                                </li>
-                                <li><a href="#">Spring 2015</a>
-                                </li>
-                                <li><a href="#">Fall 2015</a>
-                                </li>
-                                <li><a href="#">Winter 2015</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- /.col-lg-6 -->
-                        <div class="col-lg-6">
-                            <ul class="list-unstyled">
-                                <li><a href="#">Spring 2016</a>
-                                </li>
-                                <li><a href="#">Spring 2016</a>
-                                </li>
-                                <li><a href="#">Fall 2016</a>
-                                </li>
-                                <li><a href="#">Winter 2016</a>
-                                </li>
-                            </ul>
-                        </div>
-                        <!-- /.col-lg-6 -->
-                    </div>
-                    <!-- /.row -->
-                </div>
-
-                <!-- Side Widget Well -->
-                <div class="well">
-                    <h4>Side Widget Well</h4>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, perspiciatis adipisci accusamus laudantium odit aliquam repellat tempore quos aspernatur vero.</p>
-                </div>
-
-            </div>
-
         </div>
         <!-- /.row -->
 

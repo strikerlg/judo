@@ -383,7 +383,7 @@
                 }
                 category_settings.push(obj);
             });
-            $.post('eventHandler.php', {categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), description: desc}, function(data){
+            $.post('events/eventHandler.php', {categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), description: desc}, function(data){
                 console.log(data);
             })
             /*add extra forwardslash to eneble debugging
