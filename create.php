@@ -327,7 +327,7 @@
                                             "Subcategories: <span class=\"caret\"></span>"+
                                             "<span class=\"sr-only\">Toggle Dropdown</span>"+
                                         "</button>"+
-                                        "<ul class=\"dropdown-menu\">"+
+                                        "<ul class=\"dropdown-menu scrollable-menu\">"+
                                             "<li><a href=\"#\" class=\"add-subcat\">0</a></li>"+
                                             "<li><a href=\"#\" class=\"add-subcat\">1</a></li>"+
                                             "<li><a href=\"#\" class=\"add-subcat\">2</a></li>"+

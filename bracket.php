@@ -1,3 +1,25 @@
+<?php
+    session_start();
+    $nav = file_get_contents('navbar.php');
+    $evid = $_GET['evid'];
+    $category = $_GET['category'];
+    $subcat = $_GET['subcategory'];
+    $title = "Tournament Name";
+    if(isset($_SESSION['admin'])){
+        $nav = file_get_contents('navbar2.php');
+    }
+    $mysqli = new mysqli("localhost", "root", "", "judo");
+    if($mysqli->connect_error){
+        die('Connect Error (' . $mysqli->connect_errno . ') '
+        . $mysqli->connect_error);
+    }
+    $sql = "SELECT * FROM events WHERE evid = " . $evid;
+    $result = $mysqli->query($sql);
+    if($result->num_rows == 1){
+        $row = $result->fetch_assoc();
+        $title = $row['title'];
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +31,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Modern Business - Start Bootstrap Template</title>
+    <title><?php echo $title; ?></title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -35,7 +57,7 @@
 <body>
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php echo $nav ?>
 
     <!-- Page Content -->
     <div class="container">
@@ -43,8 +65,8 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Tournament Name
-                    <small><?php echo $_GET['category']?></small>
+                <h1 class="page-header"><?php echo $title ?>
+                    <small><?php echo $category; ?></small>
                 </h1>
                 <ol class="breadcrumb">
                     <li><a href="index.php">Home</a>
@@ -90,16 +112,24 @@
     
     <script>
     
-		var saveData = {
-		    teams : [
-		      ["Team 1", "Team 2"], /* first matchup */
-		      ["Team 3", "Team 4"]  /* second matchup */
-		    ],
-		    results : [[1,0], [2,7]]
-		}
+        var eventId = <?php echo $evid; ?>;
+        var cat = <?php echo '"'.$category.'"'; ?>;
+        var subCat = <?php echo '"'.$subcat.'"'; ?>;
+		var saveData = {};
+        $.getJSON('events/' + eventId + '/' + cat + '/' + subCat + ".json", function(data){
+            saveData = data;
+        }).done(function(){
+            var container = $('.jumbotron');
+            container.bracket({
+                init: saveData,
+                <?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
+                userData: "save.php"
+            });
+        });
 		function saveFn(data, userData) {
-		  var json = jQuery.toJSON(data);
-		  console.log('POST '+userData+' '+json);
+		  var json = JSON.stringify(data);
+		  console.log(json);
+          $.post('events/jsonHandler.php', {request: "update", eventid: eventId, maincategory: cat, subcategory: subCat, newBracket: json});
 		  /* You probably want to do something like this
 		  jQuery.ajax("rest/"+userData, {contentType: 'application/json',
 		                                dataType: 'json',
@@ -107,14 +137,15 @@
 		                                data: json})
 		  */
 		}
+        /*
     	$(function(){
     		var container = $('.jumbotron');
     		container.bracket({
     			init: saveData,
-    			//save: saveFn,
+    			<?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
     			userData: "save.php"
     		});
-    	})
+    	})//*/
     </script>
 
 </body>

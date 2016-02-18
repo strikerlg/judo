@@ -1,27 +1,10 @@
 <?php
-    $event_template = '<div class="col-md-8">
-
-                <!-- Event -->
-                <h2>
-                    <a href="#">Event Example</a>
-                </h2>
-                <p class="lead">
-                    by <a href="#">Generic Organization</a>
-                </p>
-                <p><i class="fa fa-clock-o"></i> On August 28, 2013 at 10:00 PM</p>
-                <hr>
-                <a href="blog-post.html">
-                    <img class="img-responsive img-hover" src="images/wrestling-tournament.png" alt="">
-                </a>
-                <hr>
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
-                <div class="btn-group" id="groupSelect" role="group" aria-label="...">
-                    <button data-expanded="false" type="button" class="btn btn-primary" id="expandong">View Bracket <i class="fa fa-angle-right"></i></a>
-                    
-                </div>
-                
-
-                <hr>';
+    session_start();
+    $nav = file_get_contents('navbar.php');
+    if(isset($_SESSION['admin'])){
+        $nav = file_get_contents('navbar2.php');
+    }
+   
     $mysqli = new mysqli("localhost", "root", "", "judo");
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
@@ -65,7 +48,7 @@
 <body>
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php echo $nav; ?>
 
     <!-- Page Content -->
     <div class="container">
@@ -106,8 +89,8 @@
                                 </a>
                                 <hr>
                                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
-                                <div class="btn-group" id="groupSelect" role="group" aria-label="...">
-                                    <button data-expanded="false" type="button" class="btn btn-primary" id="expandong">View Bracket <i class="fa fa-angle-right"></i></a>
+                                <div class="btn-group groupSelect" role="group" aria-label="...">
+                                    <button data-expanded="false" type="button" class="btn btn-primary expandong" data-eventId="'. $row['evid'] .'">View Bracket <i class="fa fa-angle-right"></i></a>
                                     
                                 </div>
                                 
@@ -149,25 +132,89 @@
     <script src="js/bootstrap.min.js"></script>
     
     <script>
-    	$('#expandong').click(function(e){
-    		var btn = $(this);
+        var topCat_data;
+        var topCat_target;
+        var lowCat_data;
+        var lowCat_target;
+    	$('.expandong').click(function(e){
+            var btn = $(this);
+            if(e.target != topCat_target){
+                $.post('events/jsonHandler.php', {category: 'first', eventid: btn.data('eventid')}, function(data){
+                    topCat_data = data;
+                }).done(function(){
+                    var ul = $(e.target).closest('.groupSelect').find('.topCat').siblings();
+                    ul.children().remove();
+                    ul.append(topCat_data);
+                });
+                topCat_target = e.target;
+            }
     		if (!btn.data("expanded")){
-    			var newBtn = $('<a class="btn btn-primary" href="bracket.php?category=cadets">Cadets</a><a class="btn btn-primary" href="bracket.php?category=juniors">Juniors</a><a class="btn btn-primary" href="bracket.php?category=seniors">Seniors</a>');
-    			newBtn.css('margin-left', '-110px');
-    			newBtn.appendTo($('#groupSelect')).animate({'margin-left': '+=110'});
+                if(btn.siblings().length < 1){
+                    var newBtn = $('<div class="dropdown pull-left">' +
+                                    '<button class="btn btn-primary dropdown-toggle topCat" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                                            'Category <span class="caret"></span>' +
+                                        '</button>' +
+                                        '<ul class="dropdown-menu">' +
+                                            '<li>Loading...</li>' +
+                                        '</ul>' +
+                                    '</div>');
+                    newBtn.css('margin-left', '-110px');
+                    newBtn.appendTo($('.groupSelect')).animate({'margin-left': '+=110'});
+                }
+                else{
+                    btn.siblings().show();
+                }
+    			
     			btn.find('i').prop('class','fa fa-angle-left');
     			btn.data('expanded', true);
     		}
     		else {
     			var siblings = btn.siblings()
     			siblings.each(function(key, value){
-    				$(siblings[key]).remove();
+    				$(siblings[key]).hide();
     			});
     			btn.find('i').prop('class','fa fa-angle-right');
     			btn.data('expanded', false);
     		}
     		
     	});
+        $('.groupSelect').delegate('.subCat', 'click', function(e){
+            e.preventDefault();
+            var btn = $(this).parent().parent().parent().find('button');
+            btn .text($(this).text());
+
+            if(e.target != lowCat_target){
+                $.post('events/jsonHandler.php', {category: 'second', eventid: btn.parent().siblings('.expandong').data('eventid'), subCat: btn.text()}, function(data){
+                    lowCat_data = data;
+                }).done(function(){
+                    var ul = $(e.target).closest('.groupSelect').find('.lowCat').siblings();
+                    ul.children().remove();
+                    ul.append(lowCat_data);
+                    $('.go').bind('click', function(e){
+                        e.preventDefault();
+                        var location = 'bracket.php?subcategory=' + $(this).text();
+                        location += "&category=" + $(this).closest('.dropdown').siblings('.dropdown').find('.topCat').text();
+                        location += "&evid=" + $(this).closest('.dropdown').siblings('.expandong').data('eventid');
+                        window.location = location;
+
+                    });
+                });
+                lowCat_target = e.target;
+            }
+            if(btn.parent().siblings().length < 2){
+                var newBtn = $('<div class="dropdown pull-left">' +
+                                '<button class="btn btn-primary dropdown-toggle lowCat" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                                        'Category <span class="caret"></span>' +
+                                    '</button>' +
+                                    '<ul class="dropdown-menu">' +
+                                        '<li>Loading...</li>' +
+                                    '</ul>' +
+                                '</div>');
+                newBtn.css('margin-left', '-110px');
+                newBtn.appendTo($('.groupSelect')).animate({'margin-left': '+=110'});
+            }
+            
+        });
     </script>
 
 </body>
