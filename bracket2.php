@@ -91,11 +91,8 @@
     <script>
     
 		var saveData = {
-		    teams : [
-		      ["Team 1", "Team 2"], /* first matchup */
-		      ["Team 3", "Team 4"]  /* second matchup */
-		    ],
-		    results : [[1,0], [2,7]]
+		    teams : [],
+		    results : []
 		}
 		function saveFn(data, userData) {
 		  var json = jQuery.toJSON(data);
