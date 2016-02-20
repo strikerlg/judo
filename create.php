@@ -56,9 +56,10 @@
         <!-- Image Header -->
         <div class="row">
             <div class="col-lg-12">
-                <img class="img-responsive" src="http://placehold.it/1200x300" alt="">
+                <img class="img-responsive" id="img-upload" src="http://placehold.it/1200x300" alt="">
             </div>
         </div>
+        <input id="upload" type="file" name="files[]" style="display: none;">
         <!-- /.row -->
 
         <!-- Service Tabs -->
@@ -318,8 +319,15 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
+    <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
+    <script src="js/jquery.ui.widget.js"></script>
+    <!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+    <script src="js/jquery.iframe-transport.js"></script>
+    <!-- The basic File Upload plugin -->
+    <script src="js/jquery.fileupload.js"></script>
     
     <script>
+        var eventId;
         var holder = "<div class=\"row\"><div class=\"input-group\">"+
                                     "<input type=\"text\" aria-label=\"Text input with segmented button dropdown\" aria-describedby=\"subcat1\" class=\"form-control\"/>" +
                                     "<div class=\"input-group-btn\">"+
@@ -363,39 +371,75 @@
     	});
     	$('#datetimepicker1').datetimepicker();
     	$('#datetimepicker1').data("DateTimePicker").minDate(new Date());
-        $('#save').click(function(e){
-            var title = $('#title').val();
-            var org = $('#org').val();
-            var date = $('#datetimepicker1').data("DateTimePicker").date()
-            var desc = $('#description').val();
-            var firstCats = $('#catNames').children();
+        
+    
+    $('#img-upload').click(function(e){
+        $('#upload').trigger('click');
+    });
+    $('#upload').click(function(){
+        $('#progress').show();
+    })
+    /*jslint unparam: true */
+    /*global window, $ */
+    $(function () {
+        'use strict';
+        // Change this to the location of your server-side upload handler:
+        var url = 'images/events/';
+        var pid;
+        $('#upload').fileupload({
+            url: url,
+            dataType: 'json',
+            add: function(e, data){
+                console.log(data.files[0].name);
+                data.context = $('#save');
+                data.context.click(function () {
+                    data.context.text('Uploading...').replaceAll($(this));
+                    data.submit();
+                });
+            },
+            done: function (e, data) {
+                var pic;
+                $.each(data.result.files, function (index, file) {
+                    pic = file.name;
+                });
+                var title = $('#title').val();
+                var org = $('#org').val();
+                var date = $('#datetimepicker1').data("DateTimePicker").date()
+                var desc = $('#description').val();
+                var firstCats = $('#catNames').children();
 
-            var category_settings = [];
-            firstCats.each(function(i){
-                var curr_sub = $(this);
-                console.log(curr_sub);
-                var obj = {title: curr_sub.find('input').val(), children: []};
-                //category_settings["category_" + i]["title"] = curr_sub.find('input').val();
-                if(curr_sub.children().length > 1){
-                    curr_sub.children('.col-md-offset-1').each(function(j){
-                        obj.children.push($(this).find('input').val());
-                    });
-                }
-                category_settings.push(obj);
-            });
-            $.post('events/eventHandler.php', {categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), description: desc}, function(data){
-                console.log(data);
-            })
-            /*add extra forwardslash to eneble debugging
-            console.log(JSON.stringify(category_settings));
-            console.log(title);
-            console.log(org);
-            console.log(date.format("YYYY-MM-DD HH:mm:ss"));
-            console.log(desc);
-            //*/
-        });
+                var category_settings = [];
+                firstCats.each(function(i){
+                    var curr_sub = $(this);
+                    console.log(curr_sub);
+                    var obj = {title: curr_sub.find('input').val(), children: []};
+                    //category_settings["category_" + i]["title"] = curr_sub.find('input').val();
+                    if(curr_sub.children().length > 1){
+                        curr_sub.children('.col-md-offset-1').each(function(j){
+                            obj.children.push($(this).find('input').val());
+                        });
+                    }
+                    category_settings.push(obj);
+                });
+                $.post('events/eventHandler.php', {categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc}, function(data){
+                    console.log(data);
+                    eventId = data.eventId;
+                });
+                $('#save').text('Saved');
+                setTimeout(function(){
+                    window.location= 'events.php';
+                }, 2000);
+            },
+            progressall: function (e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10);
+            },
+            maxFileSize: 999000,
+            acceptFileTypes: /(\.|\/)(jpe?g)$/i
+        }).prop('disabled', !$.support.fileInput)
+            .parent().addClass($.support.fileInput ? undefined : 'disabled');
+    });
     </script>
-
+    
 </body>
 
 </html>

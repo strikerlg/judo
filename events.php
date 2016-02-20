@@ -6,7 +6,7 @@
         $nav = file_get_contents('navbar2.php');
     }
    
-    $mysqli = new mysqli("localhost", "root", "", "judo");
+    $mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
         . $mysqli->connect_error);
@@ -74,8 +74,8 @@
 
                 <?php
                     while($row = $result->fetch_assoc()){
-                        echo '<div class="col-md-8">
-
+                        $desc = file_get_contents('events/' . $row['evid']. '/description.txt');
+                        echo '
                                 <!-- Event -->
                                 <h2>
                                     <a href="#">'. $row['title'] .'</a>
@@ -86,16 +86,13 @@
                                 <p><i class="fa fa-clock-o"></i> On '. $row['date'] .'</p>
                                 <hr>
                                 <a href="blog-post.html">
-                                    <img class="img-responsive img-hover" src="images/wrestling-tournament.png" alt="">
+                                    <img class="img-responsive img-hover" src="images/events/files/'. $row['pic'] .'" height-"300" width="1200" alt="">
                                 </a>
                                 <hr>
-                                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore, veritatis, tempora, necessitatibus inventore nisi quam quia repellat ut tempore laborum possimus eum dicta id animi corrupti debitis ipsum officiis rerum.</p>
+                                <p>'. $desc .'</p>
                                 <div class="btn-group groupSelect" role="group" aria-label="...">
                                     <button data-expanded="false" type="button" class="btn btn-primary expandong" data-eventId="'. $row['evid'] .'">View Bracket <i class="fa fa-angle-right"></i></a>
-                                    
                                 </div>
-                                
-
                                 <hr>';
                     }
                 ?>
@@ -160,7 +157,7 @@
                                         '</ul>' +
                                     '</div>');
                     newBtn.css('margin-left', '-110px');
-                    newBtn.appendTo($('.groupSelect')).animate({'margin-left': '+=110'});
+                    newBtn.appendTo($(this).parent('.groupSelect')).animate({'margin-left': '+=110'});
                 }
                 else{
                     btn.siblings().show();
@@ -212,7 +209,7 @@
                                     '</ul>' +
                                 '</div>');
                 newBtn.css('margin-left', '-110px');
-                newBtn.appendTo($('.groupSelect')).animate({'margin-left': '+=110'});
+                newBtn.appendTo(btn.parent().parent('.groupSelect')).animate({'margin-left': '+=110'});
             }
             
         });
