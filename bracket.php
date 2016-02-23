@@ -8,7 +8,7 @@
     if(isset($_SESSION['admin'])){
         $nav = file_get_contents('navbar2.php');
     }
-    $mysqli = new mysqli("localhost", "root", "", "judo");
+    $mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
         . $mysqli->connect_error);
@@ -18,6 +18,15 @@
     if($result->num_rows == 1){
         $row = $result->fetch_assoc();
         $title = $row['title'];
+    }
+    $sql = "SELECT name FROM profiles";
+    $result = $mysqli->query($sql);
+    $autocomplete = array();
+    if($result->num_rows > 0){
+        while($row = $result->fetch_assoc()){
+            array_push($autocomplete, $row['name']);
+        }
+        
     }
 ?>
 <!DOCTYPE html>
@@ -44,6 +53,9 @@
     
     <!-- Bracket -->
     <link rel="stylesheet" type="text/css" href="css/jquery.bracket.min.css" />
+
+    <!-- Jquery ui -->
+    <link href="css/jquery-ui.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -106,6 +118,9 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
+
+    <!-- jquery ui -->
+    <script src="js/jquery-ui.js"></script>
     
     <!-- bracket -->
     <script type="text/javascript" src="js/jquery.bracket.min.js"></script>
@@ -123,9 +138,22 @@
             container.bracket({
                 init: saveData,
                 <?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
-                userData: "save.php"
+                userData: "save.php",
+                decorator: {edit: editFn, render: acRenderFn}
             });
         });
+        var acdata = <?php echo json_encode($autocomplete); ?>;
+        function editFn(container, data, doneCb){
+            var input = $('<input type="text">');
+            input.val(data);
+            input.autocomplete({source: acdata});
+            input.blur(function() { doneCb(input.val()) });
+            input.keyup(function(e) { if ((e.keyCode||e.which)===13) input.blur() });
+            container.html(input);
+            input.focus();
+        }
+        function acRenderFn(container, data, score) {
+            container.append(data);        }
 		function saveFn(data, userData) {
 		  var json = JSON.stringify(data);
 		  console.log(json);
