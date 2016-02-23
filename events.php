@@ -6,7 +6,7 @@
         $nav = file_get_contents('navbar2.php');
     }
    
-    $mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
+    $mysqli = new mysqli("localhost", "root", "", "judo");
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
         . $mysqli->connect_error);
@@ -75,7 +75,8 @@
                 <?php
                     while($row = $result->fetch_assoc()){
                         $desc = file_get_contents('events/' . $row['evid']. '/description.txt');
-                        echo '
+                        if(isset($_SESSION['admin'])){
+                            echo '
                                 <!-- Event -->
                                 <h2>
                                     <a href="#">'. $row['title'] .'</a>
@@ -85,15 +86,37 @@
                                 </p>
                                 <p><i class="fa fa-clock-o"></i> On '. $row['date'] .'</p>
                                 <hr>
-                                <a href="blog-post.html">
-                                    <img class="img-responsive img-hover" src="images/events/files/'. $row['pic'] .'" height-"300" width="1200" alt="">
-                                </a>
+                                <img class="img-responsive img-hover" src="images/events/files/'. $row['pic'] .'" height-"300" width="1200" alt="">
+                                <hr>
+                                <p>'. $desc .'</p>
+                                <div class="btn-group groupSelect" role="group" aria-label="...">
+                                    <button data-expanded="false" type="button" class="btn btn-primary expandong" data-eventId="'. $row['evid'] .'">View Bracket <i class="fa fa-angle-right"></i></button>
+                                </div>
+                                <div class="btn-group groupSelect" role="group" aria-label="...">
+                                    <button type="button" class="btn btn-warning edit" data-eventId="'. $row['evid'] .'">Edit</button>
+                                </div>
+                                <hr>';
+                        }
+                        else{
+                             echo '
+                                <!-- Event -->
+                                <h2>
+                                    <a href="#">'. $row['title'] .'</a>
+                                </h2>
+                                <p class="lead">
+                                    by <a href="#">'. $row['organization'] .'</a>
+                                </p>
+                                <p><i class="fa fa-clock-o"></i> On '. $row['date'] .'</p>
+                                <hr>
+                                <img class="img-responsive img-hover" src="images/events/files/'. $row['pic'] .'" height-"300" width="1200" alt="">
                                 <hr>
                                 <p>'. $desc .'</p>
                                 <div class="btn-group groupSelect" role="group" aria-label="...">
                                     <button data-expanded="false" type="button" class="btn btn-primary expandong" data-eventId="'. $row['evid'] .'">View Bracket <i class="fa fa-angle-right"></i></a>
                                 </div>
                                 <hr>';
+                        }
+                       
                     }
                 ?>
                 <!-- Pager -->
@@ -176,6 +199,11 @@
     		}
     		
     	});
+
+        $('.edit').click(function(e){
+            var eventid = $(this).data('eventid');
+            window.location = 'create.php?edit=true&eventid=' + eventid;
+        });
         $('.groupSelect').delegate('.subCat', 'click', function(e){
             e.preventDefault();
             var btn = $(this).parent().parent().parent().find('button');

@@ -1,3 +1,28 @@
+<?php
+$src = '"http://placehold.it/1200x300"';
+session_start();
+if(isset($_SESSION['admin']) AND isset($_GET['edit'])){
+    $edit_mode = true;
+    $mysqli = new mysqli("localhost", "root", "", "judo");
+    if($mysqli->connect_error){
+        die('Connect Error (' . $mysqli->connect_errno . ') '
+            . $mysqli->connect_error);
+    }
+    $sql = "SELECT * FROM events WHERE evid = " . $_GET['eventid'];
+    echo $sql;
+    $result = $mysqli->query($sql);
+    if($result->num_rows > 0){
+        $row = $result->fetch_assoc();
+        $title = $row['title'];
+        $organization = $row['organization'];
+        $date = $row['date'];
+        $description = file_get_contents('events/'.$_GET['eventid'].'/description.txt');
+        $src = '"images/events/files/' . str_replace("%20"," ",$row['pic']) . '"';
+    }
+}
+else
+    $edit_mode = false;
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,7 +81,7 @@
         <!-- Image Header -->
         <div class="row">
             <div class="col-lg-12">
-                <img class="img-responsive" id="img-upload" src="http://placehold.it/1200x300" alt="">
+                <img class="img-responsive" id="img-upload" src=<?php echo $src; ?> alt="">
             </div>
         </div>
         <input id="upload" type="file" name="files[]" style="display: none;">
@@ -327,6 +352,36 @@
     <script src="js/jquery.fileupload.js"></script>
     
     <script>
+        var editMode = <?php echo $edit_mode; ?>;
+        $(document).ready(function(){
+            if(editMode){
+                //values here
+                var categories = [];
+                $.getJSON('events/' + <?php echo $_GET['eventid']?> + '/categories.json', function(data){
+                    categories = data;
+                    
+                }).done(function(){
+                    $('#title').val(<?php echo "'".$title."'";?>);
+                    $('#org').val(<?php echo "'".$organization."'";?>);
+                    $('#datetimepicker1').data("DateTimePicker").date(moment(<?php echo "'".$date."'";?>));
+                    $('#description').val(<?php echo "'".$description."'";?>);
+                    $('#numCat').val(categories.length).change();
+                    console.log(categories);
+                    $('#catNames').children().each(function(i, data){
+                        $(data).find('.input-group').find('input').val(categories[i].title);
+                        var options = $(data).find('.input-group').find('.input-group-btn').find('.scrollable-menu').children();
+                        $(options[categories[i].children.length]).find('a').click();
+                        var subOptions = $(this).find('.col-md-offset-1').find('.input-group').children('input');
+                        console.log($(subOptions));
+                        for(var j = 0; j < categories[i].children.length; j++){
+                            $(subOptions[j]).val(categories[i].children[j]);
+                        }
+                    });
+                    //$('#catNames').children();
+                });
+                
+            }
+        });
         var eventId;
         var holder = "<div class=\"row\"><div class=\"input-group\">"+
                                     "<input type=\"text\" aria-label=\"Text input with segmented button dropdown\" aria-describedby=\"subcat1\" class=\"form-control\"/>" +
@@ -392,7 +447,8 @@
             add: function(e, data){
                 console.log(data.files[0].name);
                 data.context = $('#save');
-                data.context.click(function () {
+                data.context.click(function (e) {
+                    e.preventDefault();
                     data.context.text('Uploading...').replaceAll($(this));
                     data.submit();
                 });
@@ -421,13 +477,17 @@
                     }
                     category_settings.push(obj);
                 });
-                $.post('events/eventHandler.php', {categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc}, function(data){
+                var post = {edit: editMode, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                if(editMode){
+                    post = {evnetid: <?php echo $_GET['eventid']; ?> ,edit: editMode, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                }
+                $.post('events/eventHandler.php', post, function(data){
                     console.log(data);
                     eventId = data.eventId;
                 });
                 $('#save').text('Saved');
                 setTimeout(function(){
-                    window.location= 'events.php';
+                    //window.location= 'events.php';
                 }, 2000);
             },
             progressall: function (e, data) {
