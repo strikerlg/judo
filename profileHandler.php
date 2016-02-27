@@ -25,7 +25,7 @@
 			$pid = ord($name) . "" . rand(1000, 9999);
 			$toReturn['success'] = "No errors";
 			$toReturn['pid'] = $pid;
-			$mysqli = new mysqli("localhost", "root", "", "judo");
+			$mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
 			if($mysqli->connect_error){
 				die('Connect Error (' . $mysqli->connect_errno . ') '
             	. $mysqli->connect_error);
@@ -39,7 +39,7 @@
 		$pid = $_POST['pid'];
 		$pic = $_POST['pic'];
 		//do sql insert of pic where pid
-		$mysqli = new mysqli("localhost", "root", "", "judo");
+		$mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
 		if($mysqli->connect_error){
 			die('Connect Error (' . $mysqli->connect_errno . ') '
             . $mysqli->connect_error);
