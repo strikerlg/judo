@@ -72,7 +72,13 @@
                     <li><a href="index.php">Home</a>
                     </li>
                     <li class="active">Tournament</li>
+                    <li>
+                        <div class="btn-group groupSelect" role="group" aria-label="...">
+                            <button data-expanded="false" type="button" class="btn btn-primary" id="expandong" data-eventId=<?php echo '"' . $row['evid'] . '"';?>>Other Brackets <i class="fa fa-angle-right"></i></a>
+                        </div>
+                    </li>
                 </ol>
+                
             </div>
         </div>
         <!-- /.row -->
@@ -137,15 +143,88 @@
 		                                data: json})
 		  */
 		}
-        /*
-    	$(function(){
-    		var container = $('.jumbotron');
-    		container.bracket({
-    			init: saveData,
-    			<?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
-    			userData: "save.php"
-    		});
-    	})//*/
+        //code for the bracket selector:
+        var topCat_data;
+        var topCat_target;
+        var lowCat_data;
+        var lowCat_target;
+        $('#expandong').click(function(e){
+            var btn = $(this);
+            $.post('events/jsonHandler.php', {category: 'first', eventid: btn.data('eventid')}, function(data){
+                    topCat_data = data;
+                }).done(function(){
+                    var ul = $(e.target).closest('.groupSelect').find('.topCat').siblings();
+                    ul.children().remove();
+                    ul.append(topCat_data);
+                });
+                topCat_target = e.target;
+            if (!btn.data("expanded")){
+                if(btn.siblings().length < 1){
+                    var newBtn = $('<div class="dropdown pull-left">' +
+                                    '<button class="btn btn-primary dropdown-toggle topCat" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                                            'Category <span class="caret"></span>' +
+                                        '</button>' +
+                                        '<ul class="dropdown-menu">' +
+                                            '<li>Loading...</li>' +
+                                        '</ul>' +
+                                    '</div>');
+                    newBtn.css('margin-left', '-110px');
+                    newBtn.appendTo($(this).parent('.groupSelect')).animate({'margin-left': '+=110'});
+                }
+                else{
+                    btn.siblings().show();
+                }
+                
+                btn.find('i').prop('class','fa fa-angle-left');
+                btn.data('expanded', true);
+            }
+            else {
+                var siblings = btn.siblings()
+                siblings.each(function(key, value){
+                    $(siblings[key]).hide();
+                });
+                btn.find('i').prop('class','fa fa-angle-right');
+                btn.data('expanded', false);
+            }
+            
+        });
+        $('.groupSelect').delegate('.subCat', 'click', function(e){
+            e.preventDefault();
+            var btn = $(this).parent().parent().parent().find('button');
+            btn .text($(this).text());
+
+            if(e.target != lowCat_target){
+                $.post('events/jsonHandler.php', {category: 'second', eventid: $('#expandong').data('eventid'), subCat: btn.text()}, function(data){
+                    lowCat_data = data;
+                }).done(function(){
+                    var ul = $(e.target).closest('.groupSelect').find('.lowCat').siblings();
+                    ul.children().remove();
+                    ul.append(lowCat_data);
+                    $('.go').bind('click', function(e){
+                        e.preventDefault();
+                        var location = 'bracket.php?subcategory=' + $(this).text();
+                        location += "&category=" + $(this).closest('.dropdown').siblings('.dropdown').find('.topCat').text();
+                        location += "&evid=" + $('#expandong').data('eventid');
+                        window.location = location;
+
+                    });
+                });
+                lowCat_target = e.target;
+            }
+            if(btn.parent().siblings().length < 2){
+                var newBtn = $('<div class="dropdown pull-left">' +
+                                '<button class="btn btn-primary dropdown-toggle lowCat" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
+                                        'Category <span class="caret"></span>' +
+                                    '</button>' +
+                                    '<ul class="dropdown-menu">' +
+                                        '<li>Loading...</li>' +
+                                    '</ul>' +
+                                '</div>');
+                newBtn.css('margin-left', '-110px');
+                newBtn.appendTo(btn.parent().parent('.groupSelect')).animate({'margin-left': '+=110'});
+            }
+            
+        });
     </script>
 
 </body>

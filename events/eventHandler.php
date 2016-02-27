@@ -1,4 +1,14 @@
 <?php
+	if(isset($_POST['delete'])){
+		$mysqli = new mysqli("localhost", "root", "", "judo");
+		if($mysqli->connect_error){
+			die('Connect Error (' . $mysqli->connect_errno . ') '
+           	. $mysqli->connect_error);
+		}
+		$sql = "DELETE FROM events WHERE evid = " . $_POST['eventid'];
+		$result = $mysqli->query($sql);
+		echo result;
+	}
 	if(isset($_POST['edit'])){
 		if($_POST['edit']){
 			$toReturn = [];
