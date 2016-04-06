@@ -9,7 +9,6 @@ if(isset($_SESSION['admin']) AND isset($_GET['edit'])){
             . $mysqli->connect_error);
     }
     $sql = "SELECT * FROM events WHERE evid = " . $_GET['eventid'];
-    echo $sql;
     $result = $mysqli->query($sql);
     if($result->num_rows > 0){
         $row = $result->fetch_assoc();
@@ -319,7 +318,7 @@ else
         <!-- /.row -->
 
         <hr>
-        
+        <a href="#" id="delete" class="btn btn-danger btn-lg pull-left">Delete</a>
         <a href="#" id="save" class="btn btn-primary btn-lg pull-right">Save</a>
         <!-- Footer -->
         <footer>
@@ -434,6 +433,20 @@ else
     $('#upload').click(function(){
         $('#progress').show();
     })
+    $('#delete').click(function(e){
+        e.preventDefault();
+        if(editMode){
+            $.post('events/eventHandler.php', {delete: true, eventid: <?php echo $_GET['eventid']?>}, function(data){
+                if(data){
+                    window.location = 'events.php';
+                }
+            });
+        }
+        else
+            window.location = 'events.php';
+        
+
+    });
     /*jslint unparam: true */
     /*global window, $ */
     $(function () {

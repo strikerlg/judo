@@ -118,21 +118,28 @@ if(isset($_GET['logout'])){
 	?>
 
     <!-- Header Carousel -->
-    <header id="myCarousel" class="carousel slide">
+    <header id="myCarousel" class="carousel slide " style="height: 100%;" >
         <!-- Indicators -->
         <ol class="carousel-indicators">
             <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+            <li data-target="#myCarousel" data-slide-to="1" ></li>
+            <li data-target="#myCarousel" data-slide-to="2" ></li>
         </ol>
 
         <!-- Wrapper for slides -->
         <div class="carousel-inner">
             <div class="item active">
-                <div class="fill" style="background-image:url('images/wrestle.jpg');"></div>
+                <div class="fill" style="background-image:url('images/slide1.png');"></div>
                 <div class="carousel-caption">
                     <h2>Wrestling Tracker</h2>
                 </div>
             </div>
-            
+            <div class="item">
+                <div class="fill" style="background-image:url('images/slide2.png');"></div>
+            </div>
+            <div class="item">
+                <div class="fill" style="background-image:url('images/slide3.png');"></div>
+            </div>
         </div>
 
         <!-- Controls -->
