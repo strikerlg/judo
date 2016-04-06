@@ -1,3 +1,21 @@
+<?php
+	session_start();
+	$id = $_GET['id'];
+	$mysql = new mysqli("localhost", "root", "1969", "judo");
+    if($mysql->connect_error){
+        die('Connect Error (' . $mysql->connect_errno . ') '. $mysql->connect_error);
+    }
+    $sql = "SELECT * FROM profiles WHERE pid = " . $id;
+    $conn = $mysql->query($sql);
+    if($conn->num_rows > 0){
+    	$row = $conn->fetch_assoc();
+		$pic = $row['pic'];
+		$weight = $row['weight'];
+		$height = $row['height'];
+		$name = $row['name'];
+    }
+    $mysql->close();
+?>
 <!DOCTYPE html>
 <html lang="en">
 

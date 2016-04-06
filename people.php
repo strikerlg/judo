@@ -54,7 +54,7 @@
 
         <!-- Projects Row -->
         <?php
-        $mysql = new mysqli("localhost", "root", "", "judo");
+        $mysql = new mysqli("localhost", "root", "1969", "judo");
         if($mysql->connect_error){
             die('Connect Error (' . $mysql->connect_errno . ') '
             . $mysql->connect_error);

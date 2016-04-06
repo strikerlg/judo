@@ -293,7 +293,7 @@ if(isset($_GET['logout'])){
 	        url: url,
 	        dataType: 'json',
 	        add: function(e, data){
-                console.log(data.files[0].name);
+                $('#upload').siblings('span').text(data.files[0].name);
 	        	data.context = $('#save');
 	        	data.context.click(function () {
                     data.context.text('Uploading...').replaceAll($(this));
