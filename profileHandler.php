@@ -5,6 +5,7 @@
 		$name = $_POST['name'];
 		$weight = $_POST['weight'];
 		$height = $_POST['weight'];
+		$category = $_POST['category'];
 
 		if(empty($name)){
 			$toReturn['error'] = "Name is empty.";
@@ -14,6 +15,9 @@
 		}
 		else if(empty($height)){
 			$toReturn['error'] = "Height is empty.";
+		}
+		else if(empty($category)){
+			$toReturn['error'] = "Category is empty.";
 		}
 		else if(!is_numeric($height)){
 			$toReturn['error'] = "Invalid height.";
@@ -30,7 +34,7 @@
 				die('Connect Error (' . $mysqli->connect_errno . ') '
             	. $mysqli->connect_error);
 			}
-			$sql = "INSERT INTO profiles (pid, name, weight, height) VALUES(" . $pid . ", '" . $name . "', " . $weight . ", " . $height . ")";
+			$sql = "INSERT INTO profiles (pid, name, weight, height, category) VALUES(" . $pid . ", '" . $name . "', " . $weight . ", " . $height . ", '". $category . "')";
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
 		}
@@ -39,7 +43,7 @@
 		$pid = $_POST['pid'];
 		$pic = $_POST['pic'];
 		//do sql insert of pic where pid
-		$mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
+		$mysqli = new mysqli("localhost", "root", "1969", "judo");
 		if($mysqli->connect_error){
 			die('Connect Error (' . $mysqli->connect_errno . ') '
             . $mysqli->connect_error);

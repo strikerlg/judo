@@ -1,4 +1,9 @@
 <?php
+	$pic = "cage.jpg";
+	$weight = "0.0";
+	$height = "0.0";
+	$name = "Nicolas Cage";
+	$category = "Human";
 	session_start();
 	$id = $_GET['id'];
 	$mysql = new mysqli("localhost", "root", "1969", "judo");
@@ -13,6 +18,7 @@
 		$weight = $row['weight'];
 		$height = $row['height'];
 		$name = $row['name'];
+		$category = $row['category'];
     }
     $mysql->close();
 ?>
@@ -45,14 +51,21 @@
 </head>
 
 <body>
-	<?php include('navbar.php');?>
+	<?php
+	 if(isset($_SESSION['admin'])){
+    	include('navbar2.php');
+    }
+	else{
+		include('navbar.php');
+	}
+	?>
 
     <!-- Full Width Image Header -->
     <header class="header-image" style="background: url('images/wrestler.jpg') no-repeat center center scroll;">
         <div class="headline">
             <div class="container">
-                <h1>Athlete Alias</h1>
-                <h2>Athlete Full Name</h2>
+                <h1>Athlete</h1>
+                <h2><?php echo $name; ?></h2>
             </div>
         </div>
     </header>
@@ -64,16 +77,16 @@
 
         <!-- First Featurette -->
         <div class="featurette" id="about">
-            <img class="featurette-image img-circle img-responsive pull-right" src="images/cage.jpg">
-            <h2 class="featurette-heading">Athlete Name
+            <img class="featurette-image img-circle img-responsive pull-right" src=<?php echo "\"images/profile/files/" . $pic . "\""; ?> style="height: 700px">
+            <h2 class="featurette-heading"><?php echo $name; ?>
                 <span class="text-muted">Will Catch Your Eye</span>
             </h2>
             <h4>Height:</h4>
-            <p>0.0</p>
+            <p><?php echo $height; ?></p>
             <h4>Weight:</h4>
-            <p>0.0</p>
+            <p><?php echo $weight; ?></p>
             <h4>Category:</h4>
-            <p>Human</p>
+            <p><?php echo $category; ?></p>
             <h4>Matches:</h4>
             <p>0</p>
             <h4>Wins:</h4>
@@ -81,6 +94,11 @@
         </div>
 
         <hr class="featurette-divider">
+        <div class="row">
+        	<div class="col-md-6 col-md-offset-3 text-center">
+        		<a class="btn btn-danger" id="delete" href="#">Delete user</a>
+        	</div>
+        </div>
 
         <!-- Footer -->
         <footer>
@@ -99,7 +117,20 @@
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
-
+    
+    <script>
+    	$("#delete").click(function(e){
+    		e.preventDefault();
+    		$.ajax({
+		    url: 'http://localhost/judo/images/profile/index.php?file=Reyes%2C%20Gerardo.jpg',
+		    type: 'DELETE',
+		    success: function(result) {
+		        // Do something with the result
+		      
+		    }
+});
+    	});
+    </script>
 </body>
 
 </html>

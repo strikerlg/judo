@@ -6,7 +6,7 @@
         $nav = file_get_contents('navbar2.php');
     }
    
-    $mysqli = new mysqli("localhost", "root", "", "judo");
+    $mysqli = new mysqli("localhost", "root", "1969", "judo");
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
         . $mysqli->connect_error);

@@ -86,7 +86,7 @@ if(isset($_GET['logout'])){
 								        <i class="glyphicon glyphicon-plus"></i>
 								        <span>Select image...</span>
 								        <!-- The file input field used as target for the file upload widget -->
-								        <input id="upload" type="file" name="files[]" multiple>
+								        <input id="upload" type="file" name="files[]">
 								    </span>
 								</div>
 							</div>
@@ -109,7 +109,8 @@ if(isset($_GET['logout'])){
 			</div>
 		</div>
 
-    <?php if(isset($_SESSION['admin'])){
+    <?php 
+    if(isset($_SESSION['admin'])){
     	include('navbar2.php');
     }
 	else{
@@ -299,12 +300,14 @@ if(isset($_GET['logout'])){
 	    $('#upload').fileupload({
 	        url: url,
 	        dataType: 'json',
+	        limitConcurrentUploads: 1,
+	        maxNumberOfFiles: 1,
 	        add: function(e, data){
                 $('#upload').siblings('span').text(data.files[0].name);
 	        	data.context = $('#save');
-	        	data.context.click(function () {
+	        	data.context.one('click', function () {
                     data.context.text('Uploading...').replaceAll($(this));
-                    $.post("profileHandler.php", {name: $("#inputName").val(), height: $('#inputHeight').val(), weight: $('#inputWeight').val()}, function(data2){
+                    $.post("profileHandler.php", {name: $("#inputName").val(), height: $('#inputHeight').val(), weight: $('#inputWeight').val(), category: $('#inputCategory').val()}, function(data2){
                         if(data2.hasOwnProperty("error")){
                             alert(data2.error);
                         }
@@ -316,6 +319,7 @@ if(isset($_GET['logout'])){
                 });
 	        },
 	        done: function (e, data) {
+	        	console.log(data.files);
                 var pic;
 	            $.each(data.result.files, function (index, file) {
                     pic = file.name;
@@ -339,6 +343,14 @@ if(isset($_GET['logout'])){
             acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
 	    }).prop('disabled', !$.support.fileInput)
 	        .parent().addClass($.support.fileInput ? undefined : 'disabled');
+	});
+	$('#myModal').on('hide.bs.modal', function(e){
+		$('#inputName').val("");
+		$('#inputHeight').val("");
+		$('#inputWeight').val("");
+		$('#inputCategory').val("");
+		$('#files').empty();
+		$('#upload').siblings('span').text("Select image");
 	});
 	</script>
 
