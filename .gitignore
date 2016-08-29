@@ -1,1 +1,4 @@
-events/files/
+images/events/files/*
+config.php
+.gitignore
+

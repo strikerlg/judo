@@ -1,16 +1,17 @@
 <?php
+	require('../config.php');
+	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
+	if($mysqli->connect_error){
+		die('Connect Error (' . $mysqli->connect_errno . ') '
+       	. $mysqli->connect_error);
+	}
 	if(isset($_POST['delete'])){
-		$mysqli = new mysqli("localhost", "root", "1969", "judo");
-		if($mysqli->connect_error){
-			die('Connect Error (' . $mysqli->connect_errno . ') '
-           	. $mysqli->connect_error);
-		}
 		$sql = "DELETE FROM events WHERE evid = " . $_POST['eventid'];
 		$result = $mysqli->query($sql);
 		echo result;
 	}
 	if(isset($_POST['edit'])){
-		if($_POST['edit']){
+		if($_POST['edit'] == 'true'){
 			$toReturn = [];
 			//get all the variables from create event page
 			$title = $_POST['title'];
@@ -23,11 +24,6 @@
 			//generate random id for event
 			$eventId = $_POST['evnetid'];
 			//add event to database
-			$mysqli = new mysqli("localhost", "root", "1969", "judo");
-			if($mysqli->connect_error){
-				die('Connect Error (' . $mysqli->connect_errno . ') '
-	           	. $mysqli->connect_error);
-			}
 			$sql = "UPDATE events SET title = '" . $title . "', organization = '" . $org . "', date = '" . $date . "', pic = '". $pic ."' WHERE evid = " . $eventId;
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
@@ -71,11 +67,6 @@
 			$eventId = ord($title) . "" . rand(10000, 99999);
 			$toReturn['evid'] = $eventId;
 			//add event to database
-			$mysqli = new mysqli("localhost", "ctis", "1969", "judo");
-			if($mysqli->connect_error){
-				die('Connect Error (' . $mysqli->connect_errno . ') '
-	           	. $mysqli->connect_error);
-			}
 			$sql = "INSERT INTO events (evid, title, organization, date, pic) VALUES(" . $eventId . ", '" . $title . "', '" . $org . "', '" . $date . "', '". $pic ."')";
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
