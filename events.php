@@ -7,7 +7,7 @@
     }
    
     require('config.php');
-	$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
+	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
         . $mysqli->connect_error);
