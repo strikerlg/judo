@@ -1,9 +1,11 @@
 <?php
 $src = '"http://placehold.it/1200x300"';
 session_start();
+$toReturn = array();
 if(isset($_SESSION['admin']) AND isset($_GET['edit'])){
-    $edit_mode = true;
-    $mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
+	$toReturn['mode'] = "edit";
+    require('config.php');
+	$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
             . $mysqli->connect_error);
@@ -12,15 +14,21 @@ if(isset($_SESSION['admin']) AND isset($_GET['edit'])){
     $result = $mysqli->query($sql);
     if($result->num_rows > 0){
         $row = $result->fetch_assoc();
-        $title = $row['title'];
-        $organization = $row['organization'];
-        $date = $row['date'];
-        $description = file_get_contents('events/'.$_GET['eventid'].'/description.txt');
+        $toReturn['title'] = $row['title'];
+        $toReturn['organization'] = $row['organization'];
+        $toReturn['date'] = $row['date'];
+        $toReturn['description'] = file_get_contents('events/'.$_GET['eventid'].'/description.txt');
+		$toReturn['id'] = $_GET['eventid'];
         $src = '"images/events/files/' . str_replace("%20"," ",$row['pic']) . '"';
     }
 }
-else
-    $edit_mode = false;
+else if(isset($_SESSION['admin'])){
+	//case where new event?
+	$toReturn['mode'] = "new";
+}
+else{
+	header('Location: index.php');
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,7 +41,7 @@ else
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Modern Business - Start Bootstrap Template</title>
+    <title>Judo</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -318,6 +326,7 @@ else
         <!-- /.row -->
 
         <hr>
+        <!-- TODO: remove delete if its a new event? -->
         <a href="#" id="delete" class="btn btn-danger btn-lg pull-left">Delete</a>
         <a href="#" id="save" class="btn btn-primary btn-lg pull-right">Save</a>
         <!-- Footer -->
@@ -351,19 +360,19 @@ else
     <script src="js/jquery.fileupload.js"></script>
     
     <script>
-        var editMode = <?php echo $edit_mode; ?>;
+        var metaData = <?php echo json_encode($toReturn); ?>; 
         $(document).ready(function(){
-            if(editMode){
+            if(metaData.mode == "edit"){
                 //values here
                 var categories = [];
-                $.getJSON('events/' + <?php echo $_GET['eventid']?> + '/categories.json', function(data){
+                $.getJSON('events/' + metaData.id + '/categories.json', function(data){
                     categories = data;
                     
                 }).done(function(){
-                    $('#title').val(<?php echo "'".$title."'";?>);
-                    $('#org').val(<?php echo "'".$organization."'";?>);
-                    $('#datetimepicker1').data("DateTimePicker").date(moment(<?php echo "'".$date."'";?>));
-                    $('#description').val(<?php echo "'".$description."'";?>);
+                    $('#title').val(metadata.Title);
+                    $('#org').val(metaData.organization);
+                    $('#datetimepicker1').data("DateTimePicker").date(moment(metaData.date));
+                    $('#description').val(metaData.description);
                     $('#numCat').val(categories.length).change();
                     console.log(categories);
                     $('#catNames').children().each(function(i, data){
@@ -435,8 +444,8 @@ else
     })
     $('#delete').click(function(e){
         e.preventDefault();
-        if(editMode){
-            $.post('events/eventHandler.php', {delete: true, eventid: <?php echo $_GET['eventid']?>}, function(data){
+        if(metaData.mode == 'edit'){
+            $.post('events/eventHandler.php', {delete: true, eventid: metaData.id}, function(data){
                 if(data){
                     window.location = 'events.php';
                 }
@@ -490,9 +499,9 @@ else
                     }
                     category_settings.push(obj);
                 });
-                var post = {edit: editMode, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
-                if(editMode){
-                    post = {evnetid: <?php echo $_GET['eventid']; ?> ,edit: editMode, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                var post = {edit: metaData.mode == 'edit'? true: false , categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                if(metaData.mode == 'edit'){
+                    post = {evnetid: metaData.id ,edit: true, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
                 }
                 $.post('events/eventHandler.php', post, function(data){
                     console.log(data);
