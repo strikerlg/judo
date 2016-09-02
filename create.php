@@ -130,6 +130,9 @@ else{
                         <h4>Categories</h4>
                         <form>
                         	<div class="form-group">
+                                <button class="btn btn-success" id="generate">Generate</button>
+                        	</div>
+                        	<div class="form-group">
                         		<label for="numCat">Number of Filters:</label>
                                 <input class="form-control" type="number" id="numCat"/>
                         	</div>
@@ -201,130 +204,6 @@ else{
             </div>
         </div>
 
-        <!-- Service List -->
-        <!--
-        <div class="row">
-            <div class="col-lg-12">
-                <h2 class="page-header">Summary</h2>
-            </div>
-            <div class="col-md-4">
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-tree fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Categories</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-car fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Date &amp; Time</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-support fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Description</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-database fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Service Four</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-bomb fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Service Five</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-bank fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Service Six</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-paper-plane fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Service Seven</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-space-shuttle fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Service Eight</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-                <div class="media">
-                    <div class="pull-left">
-                        <span class="fa-stack fa-2x">
-                              <i class="fa fa-circle fa-stack-2x text-primary"></i>
-                              <i class="fa fa-recycle fa-stack-1x fa-inverse"></i>
-                        </span> 
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Service Nine</h4>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo itaque ipsum sit harum.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
-        <!-- /.row -->
-
         <hr>
         <!-- TODO: remove delete if its a new event? -->
         <a href="#" id="delete" class="btn btn-danger btn-lg pull-left">Delete</a>
@@ -369,8 +248,9 @@ else{
                     categories = data;
                     
                 }).done(function(){
-                    $('#title').val(metadata.Title);
+                    $('#title').val(metaData.title);
                     $('#org').val(metaData.organization);
+                    $('#datetimepicker1').datetimepicker();
                     $('#datetimepicker1').data("DateTimePicker").date(moment(metaData.date));
                     $('#description').val(metaData.description);
                     $('#numCat').val(categories.length).change();
@@ -380,7 +260,6 @@ else{
                         var options = $(data).find('.input-group').find('.input-group-btn').find('.scrollable-menu').children();
                         $(options[categories[i].children.length]).find('a').click();
                         var subOptions = $(this).find('.col-md-offset-1').find('.input-group').children('input');
-                        console.log($(subOptions));
                         for(var j = 0; j < categories[i].children.length; j++){
                             $(subOptions[j]).val(categories[i].children[j]);
                         }
@@ -388,6 +267,10 @@ else{
                     //$('#catNames').children();
                 });
                 
+            }
+            else{
+            	$('#datetimepicker1').datetimepicker();
+    			$('#datetimepicker1').data("DateTimePicker").minDate(new Date());
             }
         });
         var eventId;
@@ -422,6 +305,22 @@ else{
             }
             console.log(sub);
         });
+        $('#generate').click(function(e){
+        	e.preventDefault();
+        	$.post('events/eventHandler.php', {'generate':true}, function(json){
+        		$('#numCat').val(json.length).change();
+                $('#catNames').children().each(function(i, data){
+                    $(data).find('.input-group').find('input').val(json[i].title);
+                    var options = $(data).find('.input-group').find('.input-group-btn').find('.scrollable-menu').children();
+                    $(options[json[i].children.length]).find('a').click();
+                    var subOptions = $(this).find('.col-md-offset-1').find('.input-group').children('input');
+                    console.log($(subOptions));
+                    for(var j = 0; j < json[i].children.length; j++){
+                        $(subOptions[j]).val(categories[i].children[j]);
+                    }
+                });
+        	});
+        });
 
     	var placehold = ["Second Category", "Third Category", "Fourth Category", "Fith Category"]
     	$('#numCat').change(function(e){
@@ -432,8 +331,6 @@ else{
     			$(holder).animate('fade', 2000).appendTo('#catNames');
     		}
     	});
-    	$('#datetimepicker1').datetimepicker();
-    	$('#datetimepicker1').data("DateTimePicker").minDate(new Date());
         
     
     $('#img-upload').click(function(e){

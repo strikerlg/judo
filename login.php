@@ -44,7 +44,7 @@
                  					<input class="form-control" placeholder="username" name="username" type="text" autofocus>
                  				</div>
                                 <div class="form-group">
-                 					<input class="form-control" placeholder="password" name="password" type="text" min-length="1">
+                 					<input class="form-control" placeholder="password" name="password" type="password" min-length="1">
                  				</div>
                                 
                                 <!-- Change this to a button or input when using this as a form -->

@@ -91,11 +91,24 @@
 						fwrite($fbracket, json_encode($bracket));
 						fclose($fbracket);
 					}
+					if(count($categories[$i]['children'])== 0){
+						$fbracket = fopen($cat_dir . "/default.json" , "w");
+						fwrite($fbracket, json_encode($bracket));
+						fclose($fbracket);
+					}
 				}
 			}
 				
 			echo json_encode($toReturn);
 		}
 		
+	}
+	else if(isset($_POST['generate'])){
+		//TODO: get the weights of the wrestlers and generate categories
+		$sql = "SELECT * FROM profiles";
+		$result = $mysqli->query($sql);
+		$toReturn = array(array('title'=>'Test', 'children'=>array()));
+		header('Content-Type: application/json');
+		echo json_encode($toReturn);
 	}
 ?>

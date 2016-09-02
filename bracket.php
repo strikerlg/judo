@@ -3,12 +3,13 @@
     $nav = file_get_contents('navbar.php');
     $evid = $_GET['evid'];
     $category = $_GET['category'];
-    $subcat = $_GET['subcategory'];
+    $subcat = $_GET['subcategory'] === 'Go!'? 'default': $_GET['subcategory'];
     $title = "Tournament Name";
     if(isset($_SESSION['admin'])){
         $nav = file_get_contents('navbar2.php');
     }
-    $mysqli = new mysqli("129.108.32.61", "ctis", "19691963", "judo");
+    require('config.php');
+	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
     if($mysqli->connect_error){
         die('Connect Error (' . $mysqli->connect_errno . ') '
         . $mysqli->connect_error);
@@ -86,7 +87,7 @@
                     <li class="active">Tournament</li>
                     <li>
                         <div class="btn-group groupSelect" role="group" aria-label="...">
-                            <button data-expanded="false" type="button" class="btn btn-primary" id="expandong" data-eventId=<?php echo '"' . $row['evid'] . '"';?>>Other Brackets <i class="fa fa-angle-right"></i></a>
+                            <button data-expanded="false" type="button" class="btn btn-primary" id="expandong" data-eventId=<?php echo '"' . $evid . '"';?>>Other Brackets <i class="fa fa-angle-right"></i></a>
                         </div>
                     </li>
                 </ol>
