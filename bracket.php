@@ -138,17 +138,23 @@
         var cat = <?php echo '"'.$category.'"'; ?>;
         var subCat = <?php echo '"'.$subcat.'"'; ?>;
 		var saveData = {};
-        $.getJSON('events/' + eventId + '/' + cat + '/' + subCat + ".json", function(data){
-            saveData = data;
-        }).done(function(){
-            var container = $('.jumbotron');
-            container.bracket({
-                init: saveData,
-                <?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
-                userData: "save.php",
-                decorator: {edit: editFn, render: acRenderFn}
-            });
-        });
+		function getBracket(){
+			$.getJSON('events/' + eventId + '/' + cat + '/' + subCat + ".json", function(data){
+	            saveData = data;
+	        }).done(function(){
+	            var container = $('.jumbotron');
+	            container.bracket({
+	                init: saveData,
+	                <?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
+	                userData: "save.php",
+	                decorator: {edit: editFn, render: acRenderFn}
+	            });
+	        });
+		}
+		getBracket();
+		setInterval(function(){
+			getBracket();
+		}, 20000);
         var acdata = <?php echo json_encode($autocomplete); ?>;
         function editFn(container, data, doneCb){
             var input = $('<input type="text">');

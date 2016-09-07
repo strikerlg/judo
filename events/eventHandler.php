@@ -1,5 +1,21 @@
 <?php
 	require('../config.php');
+	function rrmdir($src) {
+	    $dir = opendir($src);
+	    while(false !== ( $file = readdir($dir)) ) {
+	        if (( $file != '.' ) && ( $file != '..' )) {
+	            $full = $src . '/' . $file;
+	            if ( is_dir($full) ) {
+	                rrmdir($full);
+	            }
+	            else {
+	                unlink($full);
+	            }
+	        }
+	    }
+	    closedir($dir);
+	    rmdir($src);
+	}
 	$mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
 	if($mysqli->connect_error){
 		die('Connect Error (' . $mysqli->connect_errno . ') '
@@ -8,6 +24,8 @@
 	if(isset($_POST['delete'])){
 		$sql = "DELETE FROM events WHERE evid = " . $_POST['eventid'];
 		$result = $mysqli->query($sql);
+		//del dir
+		rrmdir($_POST['eventid']."");
 		echo result;
 	}
 	if(isset($_POST['edit'])){
@@ -54,6 +72,7 @@
 			echo json_encode($toReturn);
 		}
 		else{
+			//new event?
 			$toReturn = [];
 			//get all the variables from create event page
 			$title = $_POST['title'];
@@ -62,6 +81,9 @@
 			$date = $_POST['date'];
 			$desc = $_POST['description'];
 			$pic = $_POST['pic'];
+			if(isset($_POST['generated']) AND $_POST['generated']){
+				$brackets = json_decode($_POST['brackets'], true);
+			}
 
 			//generate random id for event
 			$eventId = ord($title) . "" . rand(10000, 99999);
@@ -88,15 +110,20 @@
 					mkdir($cat_dir);
 					for($j = 0; $j < count($categories[$i]['children']); $j++){
 						$fbracket = fopen($cat_dir . "/" . $categories[$i]['children'][$j] . ".json" , "w");
+						
 						fwrite($fbracket, json_encode($bracket));
 						fclose($fbracket);
 					}
 					if(count($categories[$i]['children'])== 0){
 						$fbracket = fopen($cat_dir . "/default.json" , "w");
+						if(isset($_POST['generated']) AND $_POST['generated']){
+							$bracket = $brackets[$categories[$i]['title']];
+						}
 						fwrite($fbracket, json_encode($bracket));
 						fclose($fbracket);
 					}
 				}
+				$toReturn['success'] = true;
 			}
 				
 			echo json_encode($toReturn);
@@ -104,10 +131,39 @@
 		
 	}
 	else if(isset($_POST['generate'])){
-		//TODO: get the weights of the wrestlers and generate categories
-		$sql = "SELECT * FROM profiles";
+		$sql = "SELECT MAX(weight), MIN(weight) FROM profiles";
 		$result = $mysqli->query($sql);
-		$toReturn = array(array('title'=>'Test', 'children'=>array()));
+		$maxMin = $result->fetch_all();
+		$difference = $maxMin[0][0] - $maxMin[0][1];
+		$step = $difference / 4;
+		$toReturn['categories'] = array();
+		$toReturn['brackets'] = array();
+		//generate the categories for the event
+		for($i = $maxMin[0][1]; $i < $maxMin[0][0]; $i += $step){
+			$title = $i . " to " . ($i+$step);
+			array_push($toReturn['categories'], array('title'=>$title, 'children'=>array()));
+			$sql = "SELECT name FROM profiles WHERE weight BETWEEN $i and ".($i+$step);
+			$result = $mysqli->query($sql);
+			$names = $result->fetch_all();
+			$num_teams = 1;
+			for($j = 1; $j*2 <= $result->num_rows; $j *=2){
+				$num_teams = $j;
+			}
+			$teams = array();
+			$results = array();
+			for($j = 1; $j <= $num_teams; $j++){
+				if(2*$j <= $result->num_rows){
+					array_push($teams, array($names[2*$j-2][0], $names[2*$j-1][0]));
+				}
+				else if(2*$j-1 == $result->num_rows){
+					array_push($teams, array($names[2*$j-2][0], "bye"));
+				}
+				else{
+					array_push($teams, array("bye", "bye"));
+				}
+			}
+			$toReturn['brackets'][$title] = array('teams'=>$teams, "results"=>$results);
+		}
 		header('Content-Type: application/json');
 		echo json_encode($toReturn);
 	}

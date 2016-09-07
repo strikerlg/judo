@@ -240,6 +240,8 @@ else{
     
     <script>
         var metaData = <?php echo json_encode($toReturn); ?>; 
+        var generated = false;
+        var brackets = {};
         $(document).ready(function(){
             if(metaData.mode == "edit"){
                 //values here
@@ -307,18 +309,19 @@ else{
         });
         $('#generate').click(function(e){
         	e.preventDefault();
+        	generate = true;
         	$.post('events/eventHandler.php', {'generate':true}, function(json){
-        		$('#numCat').val(json.length).change();
+        		$('#numCat').val(json.categories.length).change();
                 $('#catNames').children().each(function(i, data){
-                    $(data).find('.input-group').find('input').val(json[i].title);
+                    $(data).find('.input-group').find('input').val(json.categories[i].title);
                     var options = $(data).find('.input-group').find('.input-group-btn').find('.scrollable-menu').children();
-                    $(options[json[i].children.length]).find('a').click();
+                    $(options[json.categories[i].children.length]).find('a').click();
                     var subOptions = $(this).find('.col-md-offset-1').find('.input-group').children('input');
-                    console.log($(subOptions));
-                    for(var j = 0; j < json[i].children.length; j++){
+                    for(var j = 0; j < json.categories[i].children.length; j++){
                         $(subOptions[j]).val(categories[i].children[j]);
                     }
                 });
+                brackets = json.brackets;
         	});
         });
 
@@ -396,18 +399,23 @@ else{
                     }
                     category_settings.push(obj);
                 });
-                var post = {edit: metaData.mode == 'edit'? true: false , categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                var post = {generated: generate, edit: metaData.mode == 'edit'? true: false , categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                if(generate){
+                	post.brackets = JSON.stringify(brackets);
+                }
                 if(metaData.mode == 'edit'){
                     post = {evnetid: metaData.id ,edit: true, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
                 }
-                $.post('events/eventHandler.php', post, function(data){
-                    console.log(data);
-                    eventId = data.eventId;
+                $.post('events/eventHandler.php', post, function(data2){
+                    console.log(data2);
+                    eventId = data2.eventId;
+                    if(data2.hasOwnProperty('success')){
+                		$('#save').text('Saved');
+		                setTimeout(function(){
+		                    window.location= 'events.php';
+		                }, 2000);
+		            }
                 });
-                $('#save').text('Saved');
-                setTimeout(function(){
-                    //window.location= 'events.php';
-                }, 2000);
             },
             progressall: function (e, data) {
                 var progress = parseInt(data.loaded / data.total * 100, 10);
