@@ -128,10 +128,43 @@ else{
                     </div>
                     <div class="tab-pane fade" id="service-two">
                         <h4>Categories</h4>
+                        <div class="row">
+                        	<table class="table table-condensed">
+                        		<thead>
+                        			<td>Name</td>
+                        			<td>Weight</td>
+                        			<td>Gender</td>
+                        			<td>Age</td>
+                        		</thead>
+                        		<tbody>
+                        			<tr>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        			</tr>
+                        			<tr>
+                        				<td>Test2</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        			</tr>
+                        			<tr>
+                        				<td>Test3</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        			</tr>
+                        			<tr>
+                        				<td>Test4</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        				<td>Test</td>
+                        			</tr>
+                        		</tbody>
+                        	</table>
+                        </div>
                         <form>
-                        	<div class="form-group">
-                                <button class="btn btn-success" id="generate">Generate</button>
-                        	</div>
                         	<div class="form-group">
                         		<label for="numCat">Number of Filters:</label>
                                 <input class="form-control" type="number" id="numCat"/>
@@ -237,12 +270,15 @@ else{
     <script src="js/jquery.iframe-transport.js"></script>
     <!-- The basic File Upload plugin -->
     <script src="js/jquery.fileupload.js"></script>
+    <!-- drag table -->
+    <script src="https://cdn.jsdelivr.net/jquery.tablednd/0.8/jquery.tablednd.0.8.min.js"></script>
     
     <script>
         var metaData = <?php echo json_encode($toReturn); ?>; 
         var generated = false;
         var brackets = {};
         $(document).ready(function(){
+        	$('table').tableDnD();
             if(metaData.mode == "edit"){
                 //values here
                 var categories = [];
