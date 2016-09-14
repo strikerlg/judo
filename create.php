@@ -146,44 +146,6 @@ else{
                                 <input class="form-control" type="number" id="numCat"/>
                         	</div>
                         	<div class="form-group" id="catNames">
-                        		<label for="firstName">Category Names:</label>
-                                <div class="row">
-                                    <div class="input-group" id="firstCat">
-                                        <input type="text" aria-label="Text input with segmented button dropdown" aria-describedby="subcat1" class="form-control"/>
-                                        <div class="input-group-btn">
-                                            <button aria-expanded="false" aria-haspopup="true" data-toggle="dropdown" class="btn btn-default dropdown-toggle" type="button">
-                                                Subcategories: <span class="caret"></span>
-                                                <span class="sr-only">Toggle Dropdown</span>
-                                            </button>
-                                            <ul class="dropdown-menu scrollable-menu">
-                                                <li><a href="#" class="add-subcat">0</a></li>
-                                                <li><a href="#" class="add-subcat">1</a></li>
-                                                <li><a href="#" class="add-subcat">2</a></li>
-                                                <li><a href="#" class="add-subcat">3</a></li>
-                                                <li><a href="#" class="add-subcat">4</a></li>
-                                                <li><a href="#" class="add-subcat">5</a></li>
-                                                <li><a href="#" class="add-subcat">6</a></li>
-                                                <li><a href="#" class="add-subcat">7</a></li>
-                                                <li><a href="#" class="add-subcat">8</a></li>
-                                                <li><a href="#" class="add-subcat">9</a></li>
-                                                <li><a href="#" class="add-subcat">10</a></li>
-                                                <li><a href="#" class="add-subcat">11</a></li>
-                                                <li><a href="#" class="add-subcat">12</a></li>
-                                                <li><a href="#" class="add-subcat">13</a></li>
-                                                <li><a href="#" class="add-subcat">14</a></li>
-                                                <li><a href="#" class="add-subcat">15</a></li>
-                                                <li><a href="#" class="add-subcat">16</a></li>
-                                                <li><a href="#" class="add-subcat">17</a></li>
-                                                <li><a href="#" class="add-subcat">18</a></li>
-                                                <li><a href="#" class="add-subcat">19</a></li>
-                                                <li><a href="#" class="add-subcat">20</a></li>
-                                                <li><a href="#" class="add-subcat">21</a></li>
-                                                <li><a href="#" class="add-subcat">22</a></li>
-                                                <li><a href="#" class="add-subcat">23</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
                         	</div>
                         </form>
                     </div>
@@ -256,7 +218,7 @@ else{
         $(document).ready(function(){
         	$.post('profileHandler.php', {'tableAll': true}, function(data){
         		data.rows.forEach(function(item, index){
-        			$('#table-content').append($('<tr class="nodrop" id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'));
+        			$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'));
         		});
         	}).done(function(){
         		$('#athletes').tableDnD({'hierarchyLevel': 3});
@@ -295,27 +257,20 @@ else{
         });
         var eventId;
         var holder = "<div class=\"row\"><div class=\"input-group\">"+
-                                    "<input type=\"text\" aria-label=\"Text input with segmented button dropdown\" aria-describedby=\"subcat1\" class=\"form-control\"/>" +
+                                    "<input type=\"text\" data-targetcol=\"0\" class=\"form-control category\"/>" +
                                     "<div class=\"input-group-btn\">"+
-                                        "<button aria-expanded=\"false\" aria-haspopup=\"true\" data-toggle=\"dropdown\" class=\"btn btn-default dropdown-toggle\" type=\"button\">"+
-                                            "Subcategories: <span class=\"caret\"></span>"+
-                                            "<span class=\"sr-only\">Toggle Dropdown</span>"+
+                                        "<button aria-expanded=\"false\" class=\"btn btn-default\" type=\"button\">"+
+                                            "Category"+
                                         "</button>"+
-                                        "<ul class=\"dropdown-menu scrollable-menu\">"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">0</a></li>"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">1</a></li>"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">2</a></li>"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">3</a></li>"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">4</a></li>"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">5</a></li>"+
-                                            "<li><a href=\"#\" class=\"add-subcat\">6</a></li>"+
-                                        "</ul>"+
                                     "</div>"+
                                 "</div></div>";
         var holder2 = "<div class=\"col-md-offset-1\"><div class=\"input-group\">"+
                                     "<span class=\"input-group-addon\" id=\"subcat1\">Subcategorie Name:</span>" +
                                     "<input type=\"text\" aria-label=\"Text input with segmented button dropdown\" aria-describedby=\"subcat1\" class=\"form-control\"/>" +
                                 "</div></div>";
+        $('#catNames').delegate('input', 'keyup', function(e){
+        	$('#'+$(this).data('targetcol')).find('td:first').text($(this).val());
+        });
         $('#catNames').delegate('.add-subcat', 'click', function(e){
             e.preventDefault();
             var sub = parseInt($(this).text());
@@ -325,31 +280,18 @@ else{
             }
             console.log(sub);
         });
-        $('#generate').click(function(e){
-        	e.preventDefault();
-        	generate = true;
-        	$.post('events/eventHandler.php', {'generate':true}, function(json){
-        		$('#numCat').val(json.categories.length).change();
-                $('#catNames').children().each(function(i, data){
-                    $(data).find('.input-group').find('input').val(json.categories[i].title);
-                    var options = $(data).find('.input-group').find('.input-group-btn').find('.scrollable-menu').children();
-                    $(options[json.categories[i].children.length]).find('a').click();
-                    var subOptions = $(this).find('.col-md-offset-1').find('.input-group').children('input');
-                    for(var j = 0; j < json.categories[i].children.length; j++){
-                        $(subOptions[j]).val(categories[i].children[j]);
-                    }
-                });
-                brackets = json.brackets;
-        	});
-        });
 
     	var placehold = ["Second Category", "Third Category", "Fourth Category", "Fith Category"]
     	$('#numCat').change(function(e){
             e.preventDefault();
     		var num = $('#numCat').val();
-    		$('#firstCat').parent().siblings().remove();
-    		for(var i = 0; i < num - 1; i++){
-    			$(holder).animate('fade', 2000).appendTo('#catNames');
+    		$('#catNames').empty();
+    		$('#athletes .nodrag').remove();
+    		for(var i = 0; i < num; i++){
+    			$('#athletes').prepend($('<tr id="cat'+i+'" class="nodrag info"><td>Category Name Here</td><td></td><td></td><td></td></tr>'));
+    			var $tmp =$(holder);
+    			$tmp.find('input').data('targetcol', 'cat'+i);
+    			$tmp.animate('fade', 2000).appendTo('#catNames');
     		}
     	});
         
