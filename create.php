@@ -137,6 +137,7 @@ else{
                         			<td>Age</td>
                         		</thead>
                         		<tbody id="table-content">
+                        			<tr id="catdefault" class="info nodrop nodrag"><td colspan="4">Default Category</td></tr>
                         		</tbody>
                         	</table>
                         </div>
@@ -146,6 +147,14 @@ else{
                                 <input class="form-control" type="number" id="numCat"/>
                         	</div>
                         	<div class="form-group" id="catNames">
+                        		<div class="row"><div class="input-group">
+                                    <input type="text" data-targetcol="catdefault" class="form-control category" value="Default Category"/>
+                                    <div class="input-group-btn">
+                                        <button aria-expanded="false" class="btn btn-default" type="button">
+                                            Category
+                                        </button>
+                                    </div>
+                                </div></div>
                         	</div>
                         </form>
                     </div>
@@ -166,9 +175,7 @@ else{
 						</div>
                     <div class="tab-pane fade" id="service-four">
                         <h4>Description</h4>
-                        <form>
-                        	<textarea class="form-control" placeholder="description..." rows="3" id="description"></textarea>
-                        </form>
+                        <textarea class="form-control" placeholder="description..." rows="3" id="description"></textarea>
                     </div>
                 </div>
 
@@ -285,10 +292,10 @@ else{
     	$('#numCat').change(function(e){
             e.preventDefault();
     		var num = $('#numCat').val();
-    		$('#catNames').empty();
-    		$('#athletes .nodrag').remove();
-    		for(var i = 0; i < num; i++){
-    			$('#athletes').prepend($('<tr id="cat'+i+'" class="nodrag info"><td>Category Name Here</td><td></td><td></td><td></td></tr>'));
+    		$('#catNames').children().not(':first').remove();
+    		$('#athletes .added').remove();
+    		for(var i = 0; i < num-1; i++){
+    			$('<tr id="cat'+i+'" class="nodrag info added"><td>Category Name Here</td><td></td><td></td><td></td></tr>').insertAfter('#athletes .nodrop');
     			var $tmp =$(holder);
     			$tmp.find('input').data('targetcol', 'cat'+i);
     			$tmp.animate('fade', 2000).appendTo('#catNames');
