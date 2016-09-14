@@ -129,38 +129,14 @@ else{
                     <div class="tab-pane fade" id="service-two">
                         <h4>Categories</h4>
                         <div class="row">
-                        	<table class="table table-condensed">
+                        	<table class="table table-condensed" id="athletes">
                         		<thead>
                         			<td>Name</td>
                         			<td>Weight</td>
                         			<td>Gender</td>
                         			<td>Age</td>
                         		</thead>
-                        		<tbody>
-                        			<tr>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        			</tr>
-                        			<tr>
-                        				<td>Test2</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        			</tr>
-                        			<tr>
-                        				<td>Test3</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        			</tr>
-                        			<tr>
-                        				<td>Test4</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        				<td>Test</td>
-                        			</tr>
+                        		<tbody id="table-content">
                         		</tbody>
                         	</table>
                         </div>
@@ -278,7 +254,13 @@ else{
         var generated = false;
         var brackets = {};
         $(document).ready(function(){
-        	$('table').tableDnD();
+        	$.post('profileHandler.php', {'tableAll': true}, function(data){
+        		data.rows.forEach(function(item, index){
+        			$('#table-content').append($('<tr class="nodrop" id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'));
+        		});
+        	}).done(function(){
+        		$('#athletes').tableDnD({'hierarchyLevel': 3});
+        	});
             if(metaData.mode == "edit"){
                 //values here
                 var categories = [];
