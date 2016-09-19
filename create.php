@@ -144,7 +144,7 @@ else{
                         <form>
                         	<div class="form-group">
                         		<label for="numCat">Number of Filters:</label>
-                                <input class="form-control" type="number" id="numCat"/>
+                                <input class="form-control" type="number" id="numCat" min="1" value="1"/>
                         	</div>
                         	<div class="form-group" id="catNames">
                         		<div class="row"><div class="input-group">
