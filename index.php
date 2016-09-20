@@ -54,29 +54,47 @@ if(isset($_GET['logout'])){
 						<h4 class="modal-title" id="myModalLabel">Profile</h4>
 					</div>
 					<div class="modal-body">
-						<form class="form-horizontal">
+						<form class="form-horizontal" id="profileForm">
 							<div class="form-group">
 								<label for="inputName" class="col-sm-2 control-label">Name</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputName" placeholder="name">
+									<input type="text" class="form-control" id="inputName" placeholder="name" name="name">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="inputHeight" class="col-sm-2 control-label">Height</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputHeight" placeholder="height">
+									<input type="text" class="form-control" id="inputHeight" placeholder="height" name="height">
 								</div>
 							</div>
 							<div class="form-group">
 								<label for="inputWeight" class="col-sm-2 control-label">Weight</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputWeight" placeholder="weight">
+									<input type="text" class="form-control" id="inputWeight" placeholder="weight" name="weight">
 								</div>
 							</div>
 							<div class="form-group">
-								<label for="inputCategory" class="col-sm-2 control-label">Category</label>
+								<label for="inputCategory" class="col-sm-2 control-label">Sex</label>
 								<div class="col-sm-10">
-									<input type="text" class="form-control" id="inputCategory" placeholder="category">
+									<label class="radio-inline">
+									  <input type="radio" name="sex" id="male-option" value="m" checked> Male
+									</label>
+									<label class="radio-inline">
+									  <input type="radio" name="sex" id="female-option" value="f"> Female
+									</label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="inputCategory" class="col-sm-2 control-label">Club</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="inputClub" placeholder="club" name="club">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="datetimepicker1" class="col-sm-2 control-label">DOB</label>
+								<div class='col-sm-10 input-group date' id='datetimepicker1'>
+									<input type='text' class="form-control" name="birthdate" />
+									<span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span>
 								</div>
 							</div>
 							<div class="form-group">
@@ -86,7 +104,7 @@ if(isset($_GET['logout'])){
 								        <i class="glyphicon glyphicon-plus"></i>
 								        <span>Select image...</span>
 								        <!-- The file input field used as target for the file upload widget -->
-								        <input id="upload" type="file" name="files[]">
+								        <input id="upload" type="file" name="image">
 								    </span>
 								</div>
 							</div>
@@ -101,7 +119,7 @@ if(isset($_GET['logout'])){
 						<button type="button" class="btn btn-default" data-dismiss="modal">
 							Close
 						</button>
-						<button type="button" class="btn btn-primary" id="save">
+						<button type="submit" class="btn btn-primary" id="save">
 							Save changes
 						</button>
 					</div>
@@ -211,7 +229,7 @@ if(isset($_GET['logout'])){
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="http://placehopostld.it/700x450" alt="">
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
@@ -241,7 +259,7 @@ if(isset($_GET['logout'])){
         <!-- Footer -->
         <footer>
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-lg-12">post
                     <p>Copyright &copy; Your Website 2016</p>
                 </div>
             </div>
@@ -272,63 +290,20 @@ if(isset($_GET['logout'])){
     
     <!-- Script to do image uploads -->
     <script>
-    $('#upload').click(function(){
-    	$('#progress').show();
-    })
-	/*jslint unparam: true */
-	/*global window, $ */
-	$(function () {
-	    'use strict';
-	    // Change this to the location of your server-side upload handler:
-	    var url = 'images/profile/';
-        var pid;
-	    $('#upload').fileupload({
-	        url: url,
-	        dataType: 'json',
-	        limitConcurrentUploads: 1,
-	        maxNumberOfFiles: 1,
-	        add: function(e, data){
-                $('#upload').siblings('span').text(data.files[0].name);
-	        	data.context = $('#save');
-	        	data.context.one('click', function () {
-                    data.context.text('Uploading...').replaceAll($(this));
-                    $.post("profileHandler.php", {name: $("#inputName").val(), height: $('#inputHeight').val(), weight: $('#inputWeight').val(), category: $('#inputCategory').val()}, function(data2){
-                        if(data2.hasOwnProperty("error")){
-                            alert(data2.error);
-                        }
-                        else if(data2.result != "false"){
-                            pid = data2.pid;
-                            data.submit();
-                        }
-                    });
-                });
-	        },
-	        done: function (e, data) {
-	        	console.log(data.files);
-                var pic;
-	            $.each(data.result.files, function (index, file) {
-                    pic = file.name;
-	                $('<p/>').text(file.name).appendTo('#files');
-	            });
-                $.post("profileHandler.php", {pid: pid, pic: pic});
-
-	            $('#save').text('Saved');
-                setTimeout(function(){
-                    $('#myModal').modal('hide');
-                }, 2000);
-	        },
-	        progressall: function (e, data) {
-	            var progress = parseInt(data.loaded / data.total * 100, 10);
-	            $('#progress .progress-bar').css(
-	                'width',
-	                progress + '%'
-	            );
-	        },
-	        maxFileSize: 999000,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
-	    }).prop('disabled', !$.support.fileInput)
-	        .parent().addClass($.support.fileInput ? undefined : 'disabled');
-	});
+    $('#save').click(function(){
+    	var formdata = new FormData($('form')[0]);
+        formdata.append('insert', true);
+        $.ajax({
+        	'method':'post',
+        	'url':'profileHandler.php',
+        	'data':formdata,
+        	'contentType': false,
+        	'processData': false,
+        	'success':function(responsedata){
+        		console.log(responsedata);
+        	}
+        });
+    });
 	$('#myModal').on('hide.bs.modal', function(e){
 		$('#inputName').val("");
 		$('#inputHeight').val("");
