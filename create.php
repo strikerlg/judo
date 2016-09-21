@@ -132,12 +132,13 @@ else{
                         	<table class="table table-condensed" id="athletes">
                         		<thead>
                         			<td>Name</td>
+                        			<td>Club</td>
                         			<td>Weight</td>
                         			<td>Gender</td>
                         			<td>Age</td>
                         		</thead>
                         		<tbody id="table-content">
-                        			<tr id="catdefault" class="info nodrop nodrag"><td colspan="4">Default Category</td></tr>
+                        			<tr id="catdefault" class="info nodrop nodrag"><td colspan="5">Default Category</td></tr>
                         		</tbody>
                         	</table>
                         </div>
@@ -226,7 +227,7 @@ else{
         	$.post('profileHandler.php', {'tableAll': true}, function(data){
 						if(data.hasOwnProperty('rows')){
 							data.rows.forEach(function(item, index){
-	        			$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'));
+	        			$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
 	        		});
 						}
         	}).done(function(){
