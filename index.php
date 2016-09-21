@@ -33,6 +33,8 @@ if(isset($_GET['logout'])){
     
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 	<link rel="stylesheet" href="css/jquery.fileupload.css">
+	<!-- date picker -->
+    <link href="http://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -92,9 +94,11 @@ if(isset($_GET['logout'])){
 							</div>
 							<div class="form-group">
 								<label for="datetimepicker1" class="col-sm-2 control-label">DOB</label>
-								<div class='col-sm-10 input-group date' id='datetimepicker1'>
-									<input type='text' class="form-control" name="birthdate" />
-									<span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span>
+								<div class="col-sm-10">
+									<div class='input-group date' id='datetimepicker1'>
+										<input type='text' class="form-control" name="birthdate" />
+										<span class="input-group-addon"> <span class="glyphicon glyphicon-calendar"></span> </span>
+									</div>
 								</div>
 							</div>
 							<div class="form-group">
@@ -280,6 +284,10 @@ if(isset($_GET['logout'])){
 	<script src="js/jquery.iframe-transport.js"></script>
 	<!-- The basic File Upload plugin -->
 	<script src="js/jquery.fileupload.js"></script>
+	<!-- moment -->
+    <script src="js/moment.js"></script>
+	<!--date picker -->
+    <script src="http://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
 
     <!-- Script to Activate the Carousel -->
     <script>
@@ -290,6 +298,14 @@ if(isset($_GET['logout'])){
     
     <!-- Script to do image uploads -->
     <script>
+    $(document).ready(function(){
+    	$('#datetimepicker1').datetimepicker({
+    		'viewMode':'decades',
+    		'minDate':"1960",
+    		'maxDate':moment(),
+    		'format':"Y-M-D"
+    		});
+    });
     $('#save').click(function(){
     	var formdata = new FormData($('form')[0]);
         formdata.append('insert', true);
@@ -300,7 +316,7 @@ if(isset($_GET['logout'])){
         	'contentType': false,
         	'processData': false,
         	'success':function(responsedata){
-        		console.log(responsedata);
+        		$('#myModal').modal('hide');
         	}
         });
     });
@@ -309,6 +325,8 @@ if(isset($_GET['logout'])){
 		$('#inputHeight').val("");
 		$('#inputWeight').val("");
 		$('#inputCategory').val("");
+		$('#inputClub').val("");
+		$('#datetimepicker1').children('input').val("");
 		$('#files').empty();
 		$('#upload').siblings('span').text("Select image");
 	});

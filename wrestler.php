@@ -6,7 +6,8 @@
 	$category = "Human";
 	session_start();
 	$id = $_GET['id'];
-	$mysql = new mysqli("localhost", "root", "1969", "judo");
+	require('config.php');
+	$mysql = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
     if($mysql->connect_error){
         die('Connect Error (' . $mysql->connect_errno . ') '. $mysql->connect_error);
     }
@@ -94,11 +95,15 @@
         </div>
 
         <hr class="featurette-divider">
-        <div class="row">
-        	<div class="col-md-6 col-md-offset-3 text-center">
-        		<a class="btn btn-danger" id="delete" href="#">Delete user</a>
-        	</div>
-        </div>
+        <?php
+        	if(isset($_SESSION['admin'])){
+        		echo '<div class="row">'.
+			        	'<div class="col-md-6 col-md-offset-3 text-center">'.
+			        		'<a class="btn btn-danger" id="delete" data-id="'.$id.'" href="#">Delete user</a>'.
+			        	'</div>'.
+			        '</div>';
+        	}
+        ?>
 
         <!-- Footer -->
         <footer>
@@ -122,8 +127,10 @@
     	$("#delete").click(function(e){
     		e.preventDefault();
     		$.ajax({
-		    url: 'http://localhost/judo/images/profile/index.php?file=Reyes%2C%20Gerardo.jpg',
+		    url: 'profileHandler.php',
 		    type: 'DELETE',
+		    data: {'profile':$(this).data('id')},
+		    contentType: "application/json",
 		    success: function(result) {
 		        // Do something with the result
 		      
