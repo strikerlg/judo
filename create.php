@@ -130,7 +130,7 @@ else{
                         <h4>Categories</h4>
                         <div class="row">
                         	<table class="table table-condensed" id="athletes">
-                        		<thead>
+                        		<thead id="header">
                         			<td>Name</td>
                         			<td>Club</td>
                         			<td>Weight</td>
@@ -217,7 +217,7 @@ else{
     <!-- The basic File Upload plugin -->
     <script src="js/jquery.fileupload.js"></script>
     <!-- drag table -->
-    <script src="https://cdn.jsdelivr.net/jquery.tablednd/0.8/jquery.tablednd.0.8.min.js"></script>
+    <script src="js/tablednd.js"></script>
 
     <script>
         var metaData = <?php echo json_encode($toReturn); ?>;
@@ -225,13 +225,22 @@ else{
         var brackets = {};
         $(document).ready(function(){
         	$.post('profileHandler.php', {'tableAll': true}, function(data){
-						if(data.hasOwnProperty('rows')){
-							data.rows.forEach(function(item, index){
-	        			$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
-	        		});
-						}
+				if(data.hasOwnProperty('rows')){
+					data.rows.forEach(function(item, index){
+    					$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
+    				});
+				}
+				else{
+					console.log("No elements were returned");
+				}
         	}).done(function(){
-        		$('#athletes').tableDnD({'hierarchyLevel': 3});
+        		$('#athletes').tableDnD({
+        			onDrop: function(table, row){
+        				console.log($(table).tableDnDData());
+        			}
+        		});
+        		//console.log($('#athletes').tableDnDData());
+        		//var rows = $('#athletes').tableDnDSerialize().split('&');
         	});
             if(metaData.mode == "edit"){
                 //values here

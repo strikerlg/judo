@@ -62,7 +62,7 @@
         <!-- Projects Row -->
         <?php
         require('config.php');
-        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
+        $mysql = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
         if($mysql->connect_error){
             die('Connect Error (' . $mysql->connect_errno . ') '
             . $mysql->connect_error);
