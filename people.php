@@ -1,3 +1,10 @@
+<?php
+  session_start();
+  $nav = file_get_contents('navbar.php');
+  if(isset($_SESSION['admin'])){
+      $nav = file_get_contents('navbar2.php');
+  }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,7 +39,7 @@
 <body>
 
     <!-- Navigation -->
-    <?php include('navbar.php'); ?>
+    <?php echo $nav; ?>
 
     <!-- Page Content -->
     <div class="container">
@@ -54,7 +61,8 @@
 
         <!-- Projects Row -->
         <?php
-        $mysql = new mysqli("localhost", "root", "1969", "judo");
+        require('config.php');
+        $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_DATABASE);
         if($mysql->connect_error){
             die('Connect Error (' . $mysql->connect_errno . ') '
             . $mysql->connect_error);
@@ -78,7 +86,7 @@
         else{
             echo "<p>No athletes at this time.</p>";
         }
-        
+
         $mysql->close();
 	?>
 

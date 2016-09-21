@@ -51,7 +51,7 @@ else{
 
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    
+
     <!-- date picker -->
     <link href="http://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css">
 
@@ -200,10 +200,10 @@ else{
 
     <!-- jQuery -->
     <script src="js/jquery-1.11.3.js"></script>
-    
+
     <!-- moment -->
     <script src="js/moment.js"></script>
-    
+
     <!--date picker -->
     <script src="http://cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/src/js/bootstrap-datetimepicker.js"></script>
 
@@ -217,16 +217,18 @@ else{
     <script src="js/jquery.fileupload.js"></script>
     <!-- drag table -->
     <script src="https://cdn.jsdelivr.net/jquery.tablednd/0.8/jquery.tablednd.0.8.min.js"></script>
-    
+
     <script>
-        var metaData = <?php echo json_encode($toReturn); ?>; 
+        var metaData = <?php echo json_encode($toReturn); ?>;
         var generated = false;
         var brackets = {};
         $(document).ready(function(){
         	$.post('profileHandler.php', {'tableAll': true}, function(data){
-        		data.rows.forEach(function(item, index){
-        			$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'));
-        		});
+						if(data.hasOwnProperty('rows')){
+							data.rows.forEach(function(item, index){
+	        			$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td></tr>'));
+	        		});
+						}
         	}).done(function(){
         		$('#athletes').tableDnD({'hierarchyLevel': 3});
         	});
@@ -235,7 +237,7 @@ else{
                 var categories = [];
                 $.getJSON('events/' + metaData.id + '/categories.json', function(data){
                     categories = data;
-                    
+
                 }).done(function(){
                     $('#title').val(metaData.title);
                     $('#org').val(metaData.organization);
@@ -255,7 +257,7 @@ else{
                     });
                     //$('#catNames').children();
                 });
-                
+
             }
             else{
             	$('#datetimepicker1').datetimepicker();
@@ -301,8 +303,8 @@ else{
     			$tmp.animate('fade', 2000).appendTo('#catNames');
     		}
     	});
-        
-    
+
+
     $('#img-upload').click(function(e){
         $('#upload').trigger('click');
     });
@@ -320,7 +322,7 @@ else{
         }
         else
             window.location = 'events.php';
-        
+
 
     });
     /*jslint unparam: true */
@@ -393,7 +395,7 @@ else{
             .parent().addClass($.support.fileInput ? undefined : 'disabled');
     });
     </script>
-    
+
 </body>
 
 </html>

@@ -52,8 +52,10 @@
 		//get all of them
 		$sql = "SELECT name, weight, gender, TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) AS age FROM profiles";
 		$result = $mysqli->query($sql);
-		$toReturn['rows'] = $result->fetch_all();
+		if($result){
+			$toReturn['rows'] = $result->fetch_all();
+		}
 	}
-	header('Content-Type: application/json');
+	//header('Content-Type: application/json');
 	echo json_encode($toReturn);
 ?>
