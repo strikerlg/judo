@@ -222,7 +222,7 @@ else{
     <script>
         var metaData = <?php echo json_encode($toReturn); ?>;
         var generated = false;
-        var brackets = {};
+        var brackets = [];
         $(document).ready(function(){
         	$.post('profileHandler.php', {'tableAll': true}, function(data){
 				if(data.hasOwnProperty('rows')){
@@ -236,7 +236,19 @@ else{
         	}).done(function(){
         		$('#athletes').tableDnD({
         			onDrop: function(table, row){
-        				console.log($(table).tableDnDData());
+        				var rows = $(table).tableDnDSerialize().split("&");
+        				var categories = [];
+        				rows.forEach(function(element, index){
+        					var id;
+        					if(id = element.split('=')[1].match(/^cat\d+|^catdefault/)){
+        						categories.push({'title': $($('#'+id[0]).children('td')[0]).text(), 'participants': []});
+        					}
+        					else {
+        						id = element.split('=')[1].match(/^row\d+/);
+        						categories[categories.length-1].participants.push($($('#'+id[0]).children('td')[0]).text() + " " + id[0])
+        					}
+        				});
+        				brackets = categories;
         			}
         		});
         		//console.log($('#athletes').tableDnDData());
@@ -307,7 +319,7 @@ else{
     		$('#catNames').children().not(':first').remove();
     		$('#athletes .added').remove();
     		for(var i = 0; i < num-1; i++){
-    			$('<tr id="cat'+i+'" class="nodrag info added"><td>Category Name Here</td><td></td><td></td><td></td></tr>').insertAfter('#athletes .nodrop');
+    			$('<tr id="cat'+i+'" class="nodrag info added"><td>Category Name Here</td><td></td><td></td><td></td><td></td></tr>').insertAfter('#athletes .nodrop');
     			var $tmp =$(holder);
     			$tmp.find('input').data('targetcol', 'cat'+i);
     			$tmp.animate('fade', 2000).appendTo('#catNames');
