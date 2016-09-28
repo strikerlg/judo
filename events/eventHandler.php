@@ -49,13 +49,20 @@
 
 			//write files
 			if($result){
-				$fjson = fopen($eventId . "/categories.json", "w");
-				$ftext = fopen($eventId . "/description.txt", "w");
-				fwrite($fjson, json_encode($categories));
-				fwrite($ftext, $desc);
-				fclose($fjson);
-				fclose($ftext);
-
+				for($i = 1; $i <= count($categories); $i++){
+					$sql = "INSERT INTO categories VALUES($eventId, '". $categories[$i]['title'] . "', $i)";
+					if($mysqli->query($sql)){
+						$participants = $categories[$i]['participants'];
+						for($j = 0; $j < count($participants); $j++){
+							$sql = "INSERT INTO participants VALUES($i, '". $participants[$j]['name'] ."', ". $participants[$j]['id'].", $eventId)";
+							if(!$result){
+								echo "An error occured";
+								exit();
+							}
+						}
+					}
+				}
+				/*
 				$bracket = (object)array('teams' => array(), 'results' => array());
 				for($i = 0; $i < count($categories); $i++){
 					$cat_dir = $eventId . "/" . $categories[$i]['title'];
@@ -66,7 +73,7 @@
 						fwrite($fbracket, json_encode($bracket));
 						fclose($fbracket);
 					}
-				}
+				}*/
 			}
 				
 			echo json_encode($toReturn);
@@ -96,31 +103,19 @@
 
 			//write files
 			if($result){
-				mkdir($eventId);
-				$fjson = fopen($eventId . "/categories.json", "w");
-				$ftext = fopen($eventId . "/description.txt", "w");
-				fwrite($fjson, json_encode($categories));
-				fwrite($ftext, $desc);
-				fclose($fjson);
-				fclose($ftext);
-
-				$bracket = (object)array('teams' => array(), 'results' => array());
-				for($i = 0; $i < count($categories); $i++){
-					$cat_dir = $eventId . "/" . $categories[$i]['title'];
-					mkdir($cat_dir);
-					for($j = 0; $j < count($categories[$i]['children']); $j++){
-						$fbracket = fopen($cat_dir . "/" . $categories[$i]['children'][$j] . ".json" , "w");
-						
-						fwrite($fbracket, json_encode($bracket));
-						fclose($fbracket);
-					}
-					if(count($categories[$i]['children'])== 0){
-						$fbracket = fopen($cat_dir . "/default.json" , "w");
-						if(isset($_POST['generated']) AND $_POST['generated']){
-							$bracket = $brackets[$categories[$i]['title']];
+				for($i = 1; $i <= count($categories); $i++){
+					$sql = "INSERT INTO categories VALUES($eventId, '". $categories[$i-1]['title'] . "', $i)";
+					if($mysqli->query($sql)){
+						$toReturn['status'] = "Entered for participants";
+						$participants = $categories[$i-1]['participants'];
+						for($j = 0; $j < count($participants); $j++){
+							$sql = "INSERT INTO participants VALUES($i, '". $participants[$j]['name'] ."', ". $participants[$j]['id'].", $eventId)";
+							$result = $mysqli->query($sql);
+							if(!$result){
+								echo "An error occured";
+								exit();
+							}
 						}
-						fwrite($fbracket, json_encode($bracket));
-						fclose($fbracket);
 					}
 				}
 				$toReturn['success'] = true;

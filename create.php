@@ -227,7 +227,7 @@ else{
         	$.post('profileHandler.php', {'tableAll': true}, function(data){
 				if(data.hasOwnProperty('rows')){
 					data.rows.forEach(function(item, index){
-    					$('#table-content').append($('<tr id="row'+index+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
+    					$('#table-content').append($('<tr id="row'+index+'" data-id="'+item[5]+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
     				});
 				}
 				else{
@@ -245,7 +245,7 @@ else{
         					}
         					else {
         						id = element.split('=')[1].match(/^row\d+/);
-        						categories[categories.length-1].participants.push($($('#'+id[0]).children('td')[0]).text() + " " + id[0])
+        						categories[categories.length-1].participants.push({'name':$($('#'+id[0]).children('td')[0]).text(), 'id': $('#'+id[0]).data('id')});
         					}
         				});
         				brackets = categories;
@@ -375,27 +375,10 @@ else{
                 var org = $('#org').val();
                 var date = $('#datetimepicker1').data("DateTimePicker").date()
                 var desc = $('#description').val();
-                var firstCats = $('#catNames').children();
-
-                var category_settings = [];
-                firstCats.each(function(i){
-                    var curr_sub = $(this);
-                    console.log(curr_sub);
-                    var obj = {title: curr_sub.find('input').val(), children: []};
-                    //category_settings["category_" + i]["title"] = curr_sub.find('input').val();
-                    if(curr_sub.children().length > 1){
-                        curr_sub.children('.col-md-offset-1').each(function(j){
-                            obj.children.push($(this).find('input').val());
-                        });
-                    }
-                    category_settings.push(obj);
-                });
-                var post = {generated: generate, edit: metaData.mode == 'edit'? true: false , categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
-                if(generate){
-                	post.brackets = JSON.stringify(brackets);
-                }
+                
+                var post = {edit: metaData.mode == 'edit'? true: false , categories: JSON.stringify(brackets), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
                 if(metaData.mode == 'edit'){
-                    post = {evnetid: metaData.id ,edit: true, categories: JSON.stringify(category_settings), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
+                    post = {evnetid: metaData.id ,edit: true, categories: JSON.stringify(brackets), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
                 }
                 $.post('events/eventHandler.php', post, function(data2){
                     console.log(data2);
