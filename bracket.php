@@ -1,9 +1,8 @@
 <?php
     session_start();
     $nav = file_get_contents('navbar.php');
-    $evid = $_GET['evid'];
+    $evid = $_GET['event'];
     $category = $_GET['category'];
-    $subcat = $_GET['subcategory'] === 'Go!'? 'default': $_GET['subcategory'];
     $title = "Tournament Name";
     if(isset($_SESSION['admin'])){
         $nav = file_get_contents('navbar2.php');
@@ -135,18 +134,14 @@
     <script>
     
         var eventId = <?php echo $evid; ?>;
-        var cat = <?php echo '"'.$category.'"'; ?>;
-        var subCat = <?php echo '"'.$subcat.'"'; ?>;
+        var cat = <?php echo $category; ?>;
 		var saveData = {};
 		function getBracket(){
-			$.getJSON('events/' + eventId + '/' + cat + '/' + subCat + ".json", function(data){
-	            saveData = data;
-	        }).done(function(){
+			$.post('events/eventHandler.php', {'getBracket': true, 'eventid': eventId, 'catid': cat}).done(function(data){
 	            var container = $('.jumbotron');
 	            container.bracket({
-	                init: saveData,
+	                init: data,
 	                <?php if(isset($_SESSION['admin'])) echo "save: saveFn,"; ?>
-	                userData: "save.php",
 	                decorator: {edit: editFn, render: acRenderFn}
 	            });
 	        });
@@ -171,12 +166,6 @@
 		  var json = JSON.stringify(data);
 		  console.log(json);
           $.post('events/jsonHandler.php', {request: "update", eventid: eventId, maincategory: cat, subcategory: subCat, newBracket: json});
-		  /* You probably want to do something like this
-		  jQuery.ajax("rest/"+userData, {contentType: 'application/json',
-		                                dataType: 'json',
-		                                type: 'post',
-		                                data: json})
-		  */
 		}
         //code for the bracket selector:
         var topCat_data;
@@ -184,17 +173,19 @@
         var lowCat_data;
         var lowCat_target;
         $('#expandong').click(function(e){
-            var btn = $(this);
-            $.post('events/jsonHandler.php', {category: 'first', eventid: btn.data('eventid')}, function(data){
-                    topCat_data = data;
-                }).done(function(){
-                    var ul = $(e.target).closest('.groupSelect').find('.topCat').siblings();
-                    ul.children().remove();
-                    ul.append(topCat_data);
+            var $btn = $(this);
+            if(e.target != topCat_target && !$btn.data("expanded")){
+                $.post('events/eventHandler.php', {'expandong': true, eventid: $btn.data('eventid')}).done(function(categories){
+                    var $ul = $(e.target).closest('.groupSelect').find('.topCat').siblings();
+                    $ul.children().remove();
+                    categories.categories.forEach(function(e, i){
+                    	$ul.append('<li><a class="subCat" href="bracket.php?event='+e[0]+'&category='+e[2]+'">'+e[1]+'</a></li>');
+                    })
                 });
                 topCat_target = e.target;
-            if (!btn.data("expanded")){
-                if(btn.siblings().length < 1){
+            }
+    		if (!$btn.data("expanded")){
+                if($btn.siblings().length < 1){
                     var newBtn = $('<div class="dropdown pull-left">' +
                                     '<button class="btn btn-primary dropdown-toggle topCat" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
                                             'Category <span class="caret"></span>' +
@@ -207,59 +198,22 @@
                     newBtn.appendTo($(this).parent('.groupSelect')).animate({'margin-left': '+=110'});
                 }
                 else{
-                    btn.siblings().show();
+                    $btn.siblings().show();
                 }
-                
-                btn.find('i').prop('class','fa fa-angle-left');
-                btn.data('expanded', true);
-            }
-            else {
-                var siblings = btn.siblings()
-                siblings.each(function(key, value){
-                    $(siblings[key]).hide();
-                });
-                btn.find('i').prop('class','fa fa-angle-right');
-                btn.data('expanded', false);
-            }
-            
-        });
-        $('.groupSelect').delegate('.subCat', 'click', function(e){
-            e.preventDefault();
-            var btn = $(this).parent().parent().parent().find('button');
-            btn .text($(this).text());
 
-            if(e.target != lowCat_target){
-                $.post('events/jsonHandler.php', {category: 'second', eventid: $('#expandong').data('eventid'), subCat: btn.text()}, function(data){
-                    lowCat_data = data;
-                }).done(function(){
-                    var ul = $(e.target).closest('.groupSelect').find('.lowCat').siblings();
-                    ul.children().remove();
-                    ul.append(lowCat_data);
-                    $('.go').bind('click', function(e){
-                        e.preventDefault();
-                        var location = 'bracket.php?subcategory=' + $(this).text();
-                        location += "&category=" + $(this).closest('.dropdown').siblings('.dropdown').find('.topCat').text();
-                        location += "&evid=" + $('#expandong').data('eventid');
-                        window.location = location;
+    			$btn.find('i').prop('class','fa fa-angle-left');
+    			$btn.data('expanded', true);
+    		}
+    		else {
+    			var siblings = $btn.siblings()
+    			siblings.each(function(key, value){
+    				$(siblings[key]).hide();
+    			});
+    			$btn.find('i').prop('class','fa fa-angle-right');
+    			$btn.data('expanded', false);
+    		}
 
-                    });
-                });
-                lowCat_target = e.target;
-            }
-            if(btn.parent().siblings().length < 2){
-                var newBtn = $('<div class="dropdown pull-left">' +
-                                '<button class="btn btn-primary dropdown-toggle lowCat" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">' +
-                                        'Category <span class="caret"></span>' +
-                                    '</button>' +
-                                    '<ul class="dropdown-menu">' +
-                                        '<li>Loading...</li>' +
-                                    '</ul>' +
-                                '</div>');
-                newBtn.css('margin-left', '-110px');
-                newBtn.appendTo(btn.parent().parent('.groupSelect')).animate({'margin-left': '+=110'});
-            }
-            
-        });
+    	});
     </script>
 
 </body>

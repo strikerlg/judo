@@ -96,7 +96,7 @@
 			$eventId = ord($title) . "" . rand(10000, 99999);
 			$toReturn['evid'] = $eventId;
 			//add event to database
-			$sql = "INSERT INTO events (evid, title, organization, date, pic) VALUES(" . $eventId . ", '" . $title . "', '" . $org . "', '" . $date . "', '". $pic ."')";
+			$sql = "INSERT INTO events (evid, title, organization, date, pic, description) VALUES(" . $eventId . ", '" . $title . "', '" . $org . "', '" . $date . "', '". $pic ."', '$desc')";
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
 			$toReturn['sql'] = $sql;
@@ -124,6 +124,47 @@
 			echo json_encode($toReturn);
 		}
 		
+	}
+	else if(isset($_POST['expandong'])){
+		$evid = $_POST['eventid'];
+		$sql = "SELECT * FROM categories WHERE evid = $evid";
+		$result = $mysqli->query($sql);
+		if($result){
+			$categories = $result->fetch_all();
+			$toReturn['categories'] = $categories;
+		}
+		header('Content-Type: application/json');
+		echo json_encode($toReturn);
+	}
+	else if(isset($_POST['getBracket'])){
+		//get bracket
+		$eventid = $_POST['eventid'];
+		$catid = $_POST['catid'];
+		$sql = "SELECT participant FROM judo.participants WHERE catevid = $eventid AND catid = $catid";
+		$result = $mysqli->query($sql);
+		if($result){
+			$names = $result->fetch_all();
+			$num_teams = 1;
+			for($j = 1; $j*2 <= $result->num_rows; $j *=2){
+				$num_teams = $j;
+			}
+			$teams = array();
+			$results = array();
+			for($j = 1; $j <= $num_teams; $j++){
+				if(2*$j <= $result->num_rows){
+					array_push($teams, array($names[2*$j-2][0], $names[2*$j-1][0]));
+				}
+				else if(2*$j-1 == $result->num_rows){
+					array_push($teams, array($names[2*$j-2][0], "bye"));
+				}
+				else{
+					array_push($teams, array("bye", "bye"));
+				}
+			}
+			$toReturn = array('teams'=>$teams, "results"=>$results);
+			header('Content-Type: application/json');
+			echo json_encode($toReturn);
+		}
 	}
 	else if(isset($_POST['generate'])){
 		$sql = "SELECT MAX(weight), MIN(weight) FROM profiles";
