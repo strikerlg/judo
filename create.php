@@ -129,6 +129,11 @@ else{
                     <div class="tab-pane fade" id="service-two">
                         <h4>Categories</h4>
                         <div class="row">
+                        	<div class="pull-right">
+                        		<a class="btn btn-default" id="refresh">Refresh</a>
+                        	</div>
+                        </div>
+                        <div class="row">
                         	<table class="table table-condensed" id="athletes">
                         		<thead id="header">
                         			<td>Name</td>
@@ -224,35 +229,42 @@ else{
         var generated = false;
         var brackets = [];
         $(document).ready(function(){
-        	$.post('profileHandler.php', {'tableAll': true}, function(data){
-				if(data.hasOwnProperty('rows')){
-					data.rows.forEach(function(item, index){
-    					$('#table-content').append($('<tr id="row'+index+'" data-id="'+item[5]+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
-    				});
-				}
-				else{
-					console.log("No elements were returned");
-				}
-        	}).done(function(){
-        		$('#athletes').tableDnD({
-        			onDrop: function(table, row){
-        				var rows = $(table).tableDnDSerialize().split("&");
-        				var categories = [];
-        				rows.forEach(function(element, index){
-        					var id;
-        					if(id = element.split('=')[1].match(/^cat\d+|^catdefault/)){
-        						categories.push({'title': $($('#'+id[0]).children('td')[0]).text(), 'participants': []});
-        					}
-        					else {
-        						id = element.split('=')[1].match(/^row\d+/);
-        						categories[categories.length-1].participants.push({'name':$($('#'+id[0]).children('td')[0]).text(), 'id': $('#'+id[0]).data('id')});
-        					}
-        				});
-        				brackets = categories;
-        			}
-        		});
-        		//console.log($('#athletes').tableDnDData());
-        		//var rows = $('#athletes').tableDnDSerialize().split('&');
+        	function fillTable(){
+        		$.post('profileHandler.php', {'tableAll': true}, function(data){
+					if(data.hasOwnProperty('rows')){
+						$('#table-content').children().not('#catdefault').remove();
+						data.rows.forEach(function(item, index){
+	    					$('#table-content').append($('<tr id="row'+index+'" data-id="'+item[5]+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
+	    				});
+					}
+					else{
+						console.log("No elements were returned");
+					}
+	        	}).done(function(){
+	        		$('#athletes').tableDnD({
+	        			onDrop: function(table, row){
+	        				var rows = $(table).tableDnDSerialize().split("&");
+	        				var categories = [];
+	        				rows.forEach(function(element, index){
+	        					var id;
+	        					if(id = element.split('=')[1].match(/^cat\d+|^catdefault/)){
+	        						categories.push({'title': $($('#'+id[0]).children('td')[0]).text(), 'participants': []});
+	        					}
+	        					else {
+	        						id = element.split('=')[1].match(/^row\d+/);
+	        						categories[categories.length-1].participants.push({'name':$($('#'+id[0]).children('td')[0]).text(), 'id': $('#'+id[0]).data('id')});
+	        					}
+	        				});
+	        				brackets = categories;
+	        			}
+	        		});
+	        		//console.log($('#athletes').tableDnDData());
+	        		//var rows = $('#athletes').tableDnDSerialize().split('&');
+	        	});
+	        }
+	        fillTable();
+	        $('#refresh').click(function(e){
+        		fillTable();
         	});
             if(metaData.mode == "edit"){
                 //values here
