@@ -165,7 +165,7 @@
 		function saveFn(data, userData) {
 		  var json = JSON.stringify(data);
 		  console.log(json);
-          $.post('events/jsonHandler.php', {request: "update", eventid: eventId, maincategory: cat, subcategory: subCat, newBracket: json});
+          $.post('events/jsonHandler.php', {updateBracket: true, eventid: eventId, catid: cat, newBracket: json});
 		}
         //code for the bracket selector:
         var topCat_data;

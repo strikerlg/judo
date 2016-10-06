@@ -34,13 +34,12 @@
 			echo $data;
 		}
 	}
-	else if(isset($_POST['request'])){
+	else if(isset($_POST['updateBracket'])){
 		$evid = $_POST['eventid'];
-		$category = $_POST['maincategory'];
-		$subcat = $_POST['subcategory'];
+		$catid = $_POST['catid'];
 		$json = json_decode($_POST['newBracket']);
 
-		$fjson = fopen($evid . "/" . $category . "/" . $subcat . ".json" , "w");
+		$fjson = fopen("brackets/$evid-$catid.json" , "w");
 		fwrite($fjson, json_encode($json));
 		fclose($fjson);
 		echo "Wrote file succesfully";

@@ -17,7 +17,7 @@ if(isset($_SESSION['admin']) AND isset($_GET['edit'])){
         $toReturn['title'] = $row['title'];
         $toReturn['organization'] = $row['organization'];
         $toReturn['date'] = $row['date'];
-        $toReturn['description'] = file_get_contents('events/'.$_GET['eventid'].'/description.txt');
+        $toReturn['description'] = $row['description'];
 		$toReturn['id'] = $_GET['eventid'];
         $src = '"images/events/files/' . str_replace("%20"," ",$row['pic']) . '"';
     }
@@ -75,7 +75,7 @@ else{
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">New Event</h1>
+                <h1 id="event-title" class="page-header">New Event</h1>
                 <ol class="breadcrumb">
                     <li><a href="index.php">Home</a>
                     </li>
@@ -141,6 +141,7 @@ else{
                         			<td>Weight</td>
                         			<td>Gender</td>
                         			<td>Age</td>
+                        			<td>Remove</td>
                         		</thead>
                         		<tbody id="table-content">
                         			<tr id="catdefault" class="info nodrop nodrag"><td colspan="5">Default Category</td></tr>
@@ -234,7 +235,7 @@ else{
 					if(data.hasOwnProperty('rows')){
 						$('#table-content').children().not('#catdefault').remove();
 						data.rows.forEach(function(item, index){
-	    					$('#table-content').append($('<tr id="row'+index+'" data-id="'+item[5]+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td></tr>'));
+	    					$('#table-content').append($('<tr id="row'+index+'" data-id="'+item[5]+'"><td>'+item[0]+'</td><td>'+item[1]+'</td><td>'+item[2]+'</td><td>'+item[3]+'</td><td>'+item[4]+'</td><td><a class="remove" href="#"><i class="fa fa-close"></i></a></td></tr>'));
 	    				});
 					}
 					else{
@@ -258,40 +259,59 @@ else{
 	        				brackets = categories;
 	        			}
 	        		});
-	        		//console.log($('#athletes').tableDnDData());
 	        		//var rows = $('#athletes').tableDnDSerialize().split('&');
+	        		saveTable();
 	        	});
 	        }
+	        function saveTable(){
+	        	var rows = $('#table-content').children('tr');
+	        	var categories = [];
+	        	rows.each(function(index){
+	        		//do stuff
+	        		if($(rows[index]).prop('id').match(/^cat\d+|^catdefault/)){
+	        			categories.push({'title': $($(rows[index]).children('td')[0]).text(), 'participants': []});
+	        		}
+	        		else {
+						id = $(rows[index]).prop('id');
+						categories[categories.length-1].participants.push({'name':$($(rows[index]).children('td')[0]).text(), 'id': $(rows[index]).data('id')});
+					}
+	        	});
+	        	brackets = categories;
+	        }
 	        fillTable();
+	        $('#table-content').delegate('.remove', 'click', function(e){
+	        	e.preventDefault();
+	        	$(this).closest('tr').remove();
+	        	saveTable();
+	        })
 	        $('#refresh').click(function(e){
         		fillTable();
         	});
             if(metaData.mode == "edit"){
-                //values here
-                var categories = [];
-                $.getJSON('events/' + metaData.id + '/categories.json', function(data){
-                    categories = data;
-
-                }).done(function(){
-                    $('#title').val(metaData.title);
-                    $('#org').val(metaData.organization);
-                    $('#datetimepicker1').datetimepicker();
-                    $('#datetimepicker1').data("DateTimePicker").date(moment(metaData.date));
-                    $('#description').val(metaData.description);
-                    $('#numCat').val(categories.length).change();
-                    console.log(categories);
-                    $('#catNames').children().each(function(i, data){
-                        $(data).find('.input-group').find('input').val(categories[i].title);
-                        var options = $(data).find('.input-group').find('.input-group-btn').find('.scrollable-menu').children();
-                        $(options[categories[i].children.length]).find('a').click();
-                        var subOptions = $(this).find('.col-md-offset-1').find('.input-group').children('input');
-                        for(var j = 0; j < categories[i].children.length; j++){
-                            $(subOptions[j]).val(categories[i].children[j]);
-                        }
-                    });
-                    //$('#catNames').children();
-                });
-
+                //fill info with edit
+                $('#event-title').text(metaData.title);
+                $('#title').val(metaData.title);
+                $('#org').val(metaData.organization);
+                $('#description').val(metaData.description);
+                $('#datetimepicker1').datetimepicker();
+    			$('#datetimepicker1').data("DateTimePicker").defaultDate(new moment(metaData.date, "YYYY-MM-DD HH:mm:ss"));
+    			$('#save').click(function(e){
+    				var title = $('#title').val();
+	                var org = $('#org').val();
+	                var date = $('#datetimepicker1').data("DateTimePicker").date()
+	                var desc = $('#description').val();
+	                var post = {evnetid: metaData.id ,edit: true, categories: JSON.stringify(brackets), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), description: desc};
+	                $.post('events/eventHandler.php', post, function(data2){
+	                    console.log(data2);
+	                    eventId = data2.eventId;
+	                    if(data2.hasOwnProperty('success')){
+	                		$('#save').text('Saved');
+			                setTimeout(function(){
+			                    window.location= 'events.php';
+			                }, 2000);
+			            }
+	                });
+    			});
             }
             else{
             	$('#datetimepicker1').datetimepicker();
@@ -392,11 +412,11 @@ else{
                 if(metaData.mode == 'edit'){
                     post = {evnetid: metaData.id ,edit: true, categories: JSON.stringify(brackets), title: title, organization: org, date: date.format("YYYY-MM-DD HH:mm:ss"), pic: pic, description: desc};
                 }
-                $.post('events/eventHandler.php', post, function(data2){
-                    console.log(data2);
-                    eventId = data2.eventId;
-                    if(data2.hasOwnProperty('success')){
-                		$('#save').text('Saved');
+                $.post('events/eventHandler.php', post).done(function(data2){
+	            	console.log(data2);
+	                eventId = data2.eventId;
+	                if(data2.hasOwnProperty('success')){
+	            		$('#save').text('Saved');
 		                setTimeout(function(){
 		                    window.location= 'events.php';
 		                }, 2000);

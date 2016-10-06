@@ -22,11 +22,18 @@
        	. $mysqli->connect_error);
 	}
 	if(isset($_POST['delete'])){
+		$sql = "SELECT pic FROM events WHERE evid = " . $_POST['eventid'];
+		$result = $mysqli->query($sql);
+		if($result){
+			$img = $result->fetch_all()[0];
+			unlink('../images/events/files/' . $img);
+			unlink('../images/events/files/thumbnail/' . $img);
+		}
 		$sql = "DELETE FROM events WHERE evid = " . $_POST['eventid'];
 		$result = $mysqli->query($sql);
 		//del dir
-		rrmdir($_POST['eventid']."");
-		echo result;
+		//rrmdir($_POST['eventid']."");
+		echo $result;
 	}
 	if(isset($_POST['edit'])){
 		if($_POST['edit'] == 'true'){
@@ -37,12 +44,12 @@
 			$categories = json_decode($_POST['categories'], true);
 			$date = $_POST['date'];
 			$desc = $_POST['description'];
-			$pic = $_POST['pic'];
+			//$pic = $_POST['pic'];
 
 			//generate random id for event
 			$eventId = $_POST['evnetid'];
 			//add event to database
-			$sql = "UPDATE events SET title = '" . $title . "', organization = '" . $org . "', date = '" . $date . "', pic = '". $pic ."' WHERE evid = " . $eventId;
+			$sql = "UPDATE events SET title = '" . $title . "', organization = '" . $org . "', date = '" . $date . "', description = '$desc' WHERE evid = " . $eventId;
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
 			$toReturn['sql'] = $sql;
@@ -140,30 +147,37 @@
 		//get bracket
 		$eventid = $_POST['eventid'];
 		$catid = $_POST['catid'];
-		$sql = "SELECT participant FROM judo.participants WHERE catevid = $eventid AND catid = $catid";
-		$result = $mysqli->query($sql);
-		if($result){
-			$names = $result->fetch_all();
-			$num_teams = 1;
-			for($j = 1; $j*2 <= $result->num_rows; $j *=2){
-				$num_teams = $j;
-			}
-			$teams = array();
-			$results = array();
-			for($j = 1; $j <= $num_teams; $j++){
-				if(2*$j <= $result->num_rows){
-					array_push($teams, array($names[2*$j-2][0], $names[2*$j-1][0]));
-				}
-				else if(2*$j-1 == $result->num_rows){
-					array_push($teams, array($names[2*$j-2][0], "bye"));
-				}
-				else{
-					array_push($teams, array("bye", "bye"));
-				}
-			}
-			$toReturn = array('teams'=>$teams, "results"=>$results);
+		if(file_exists("brackets/$eventid-$catid.json")){
+			//get from json
 			header('Content-Type: application/json');
-			echo json_encode($toReturn);
+			echo file_get_contents("brackets/$eventid-$catid.json");
+		}
+		else{
+			$sql = "SELECT participant FROM judo.participants WHERE catevid = $eventid AND catid = $catid";
+			$result = $mysqli->query($sql);
+			if($result){
+				$names = $result->fetch_all();
+				$num_teams = 1;
+				for($j = 1; $j*2 <= $result->num_rows; $j *=2){
+					$num_teams = $j;
+				}
+				$teams = array();
+				$results = array();
+				for($j = 1; $j <= $num_teams; $j++){
+					if(2*$j <= $result->num_rows){
+						array_push($teams, array($names[2*$j-2][0], $names[2*$j-1][0]));
+					}
+					else if(2*$j-1 == $result->num_rows){
+						array_push($teams, array($names[2*$j-2][0], "bye"));
+					}
+					else{
+						array_push($teams, array("bye", "bye"));
+					}
+				}
+				$toReturn = array('teams'=>$teams, "results"=>$results);
+				header('Content-Type: application/json');
+				echo json_encode($toReturn);
+			}
 		}
 	}
 	else if(isset($_POST['generate'])){
