@@ -21,7 +21,7 @@
                         <a href="events.php">Events</a>
                     </li>
                     <li>
-                        <a href="#">Gallery</a>
+                        <a href="galery.php">Gallery</a>
                     </li>
                     <li>
                         <a href="create.php">Create Event</a>

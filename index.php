@@ -192,7 +192,10 @@ if(isset($_GET['logout'])){
                     <div class="panel-body">
                         <p>View the statistics of different athletes and their achievments. Can't find yourself in our records? Fill out our form to get started!</p>
                         <a href="people.php" class="btn btn-default">View athletes</a>
-                        <button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Form</button>
+												<?php if(isset($_SESSION['admin'])){
+													echo '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal">Form</button>';
+												}
+												?>
                     </div>
                 </div>
             </div>
@@ -263,8 +266,8 @@ if(isset($_GET['logout'])){
         <!-- Footer -->
         <footer>
             <div class="row">
-                <div class="col-lg-12">post
-                    <p>Copyright &copy; Your Website 2016</p>
+                <div class="col-lg-12">
+                    <p>Copyright &copy; <a href="martechnologic.com">Martech</a> 2016</p>
                 </div>
             </div>
         </footer>
