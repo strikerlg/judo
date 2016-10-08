@@ -79,7 +79,7 @@
 		}
 		else if(isset($_POST['tableAll'])){
 			//get all of them
-			$sql = "SELECT name, club, weight, gender, TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) AS age FROM profiles ORDER BY weight, age";
+			$sql = "SELECT name, club, weight, gender, TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) AS age, pid FROM profiles ORDER BY weight, age";
 			$result = $mysqli->query($sql);
 			$toReturn['rows'] = $result->fetch_all();
 		}

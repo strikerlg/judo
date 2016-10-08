@@ -22,11 +22,18 @@
        	. $mysqli->connect_error);
 	}
 	if(isset($_POST['delete'])){
+		$sql = "SELECT pic FROM events WHERE evid = " . $_POST['eventid'];
+		$result = $mysqli->query($sql);
+		if($result){
+			$img = $result->fetch_all()[0];
+			unlink('../images/events/files/' . $img);
+			unlink('../images/events/files/thumbnail/' . $img);
+		}
 		$sql = "DELETE FROM events WHERE evid = " . $_POST['eventid'];
 		$result = $mysqli->query($sql);
 		//del dir
-		rrmdir($_POST['eventid']."");
-		echo result;
+		//rrmdir($_POST['eventid']."");
+		echo $result;
 	}
 	if(isset($_POST['edit'])){
 		if($_POST['edit'] == 'true'){
@@ -37,25 +44,32 @@
 			$categories = json_decode($_POST['categories'], true);
 			$date = $_POST['date'];
 			$desc = $_POST['description'];
-			$pic = $_POST['pic'];
+			//$pic = $_POST['pic'];
 
 			//generate random id for event
 			$eventId = $_POST['evnetid'];
 			//add event to database
-			$sql = "UPDATE events SET title = '" . $title . "', organization = '" . $org . "', date = '" . $date . "', pic = '". $pic ."' WHERE evid = " . $eventId;
+			$sql = "UPDATE events SET title = '" . $title . "', organization = '" . $org . "', date = '" . $date . "', description = '$desc' WHERE evid = " . $eventId;
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
 			$toReturn['sql'] = $sql;
 
 			//write files
 			if($result){
-				$fjson = fopen($eventId . "/categories.json", "w");
-				$ftext = fopen($eventId . "/description.txt", "w");
-				fwrite($fjson, json_encode($categories));
-				fwrite($ftext, $desc);
-				fclose($fjson);
-				fclose($ftext);
-
+				for($i = 1; $i <= count($categories); $i++){
+					$sql = "INSERT INTO categories VALUES($eventId, '". $categories[$i]['title'] . "', $i)";
+					if($mysqli->query($sql)){
+						$participants = $categories[$i]['participants'];
+						for($j = 0; $j < count($participants); $j++){
+							$sql = "INSERT INTO participants VALUES($i, '". $participants[$j]['name'] ."', ". $participants[$j]['id'].", $eventId)";
+							if(!$result){
+								echo "An error occured";
+								exit();
+							}
+						}
+					}
+				}
+				/*
 				$bracket = (object)array('teams' => array(), 'results' => array());
 				for($i = 0; $i < count($categories); $i++){
 					$cat_dir = $eventId . "/" . $categories[$i]['title'];
@@ -66,7 +80,7 @@
 						fwrite($fbracket, json_encode($bracket));
 						fclose($fbracket);
 					}
-				}
+				}*/
 			}
 				
 			echo json_encode($toReturn);
@@ -89,38 +103,26 @@
 			$eventId = ord($title) . "" . rand(10000, 99999);
 			$toReturn['evid'] = $eventId;
 			//add event to database
-			$sql = "INSERT INTO events (evid, title, organization, date, pic) VALUES(" . $eventId . ", '" . $title . "', '" . $org . "', '" . $date . "', '". $pic ."')";
+			$sql = "INSERT INTO events (evid, title, organization, date, pic, description) VALUES(" . $eventId . ", '" . $title . "', '" . $org . "', '" . $date . "', '". $pic ."', '$desc')";
 			$result = $mysqli->query($sql);
 			$toReturn['result'] = $result;
 			$toReturn['sql'] = $sql;
 
 			//write files
 			if($result){
-				mkdir($eventId);
-				$fjson = fopen($eventId . "/categories.json", "w");
-				$ftext = fopen($eventId . "/description.txt", "w");
-				fwrite($fjson, json_encode($categories));
-				fwrite($ftext, $desc);
-				fclose($fjson);
-				fclose($ftext);
-
-				$bracket = (object)array('teams' => array(), 'results' => array());
-				for($i = 0; $i < count($categories); $i++){
-					$cat_dir = $eventId . "/" . $categories[$i]['title'];
-					mkdir($cat_dir);
-					for($j = 0; $j < count($categories[$i]['children']); $j++){
-						$fbracket = fopen($cat_dir . "/" . $categories[$i]['children'][$j] . ".json" , "w");
-						
-						fwrite($fbracket, json_encode($bracket));
-						fclose($fbracket);
-					}
-					if(count($categories[$i]['children'])== 0){
-						$fbracket = fopen($cat_dir . "/default.json" , "w");
-						if(isset($_POST['generated']) AND $_POST['generated']){
-							$bracket = $brackets[$categories[$i]['title']];
+				for($i = 1; $i <= count($categories); $i++){
+					$sql = "INSERT INTO categories VALUES($eventId, '". $categories[$i-1]['title'] . "', $i)";
+					if($mysqli->query($sql)){
+						$toReturn['status'] = "Entered for participants";
+						$participants = $categories[$i-1]['participants'];
+						for($j = 0; $j < count($participants); $j++){
+							$sql = "INSERT INTO participants VALUES($i, '". $participants[$j]['name'] ."', ". $participants[$j]['id'].", $eventId)";
+							$result = $mysqli->query($sql);
+							if(!$result){
+								echo "An error occured";
+								exit();
+							}
 						}
-						fwrite($fbracket, json_encode($bracket));
-						fclose($fbracket);
 					}
 				}
 				$toReturn['success'] = true;
@@ -129,6 +131,54 @@
 			echo json_encode($toReturn);
 		}
 		
+	}
+	else if(isset($_POST['expandong'])){
+		$evid = $_POST['eventid'];
+		$sql = "SELECT * FROM categories WHERE evid = $evid";
+		$result = $mysqli->query($sql);
+		if($result){
+			$categories = $result->fetch_all();
+			$toReturn['categories'] = $categories;
+		}
+		header('Content-Type: application/json');
+		echo json_encode($toReturn);
+	}
+	else if(isset($_POST['getBracket'])){
+		//get bracket
+		$eventid = $_POST['eventid'];
+		$catid = $_POST['catid'];
+		if(file_exists("brackets/$eventid-$catid.json")){
+			//get from json
+			header('Content-Type: application/json');
+			echo file_get_contents("brackets/$eventid-$catid.json");
+		}
+		else{
+			$sql = "SELECT participant FROM judo.participants WHERE catevid = $eventid AND catid = $catid";
+			$result = $mysqli->query($sql);
+			if($result){
+				$names = $result->fetch_all();
+				$num_teams = 1;
+				for($j = 1; $j*2 <= $result->num_rows; $j *=2){
+					$num_teams = $j;
+				}
+				$teams = array();
+				$results = array();
+				for($j = 1; $j <= $num_teams; $j++){
+					if(2*$j <= $result->num_rows){
+						array_push($teams, array($names[2*$j-2][0], $names[2*$j-1][0]));
+					}
+					else if(2*$j-1 == $result->num_rows){
+						array_push($teams, array($names[2*$j-2][0], "bye"));
+					}
+					else{
+						array_push($teams, array("bye", "bye"));
+					}
+				}
+				$toReturn = array('teams'=>$teams, "results"=>$results);
+				header('Content-Type: application/json');
+				echo json_encode($toReturn);
+			}
+		}
 	}
 	else if(isset($_POST['generate'])){
 		$sql = "SELECT MAX(weight), MIN(weight) FROM profiles";

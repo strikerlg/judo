@@ -32,6 +32,25 @@ DEFAULT CHARACTER SET = latin1;
 
 
 -- -----------------------------------------------------
+-- Table `judo`.`categories`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `judo`.`categories` (
+  `evid` INT(11) NOT NULL,
+  `name` VARCHAR(45) NULL DEFAULT NULL,
+  `catid` INT(11) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`catid`, `evid`),
+  INDEX `event_id` (`evid` ASC),
+  CONSTRAINT `event_id`
+    FOREIGN KEY (`evid`)
+    REFERENCES `judo`.`events` (`evid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 4
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
 -- Table `judo`.`profiles`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `judo`.`profiles` (
@@ -45,7 +64,32 @@ CREATE TABLE IF NOT EXISTS `judo`.`profiles` (
   `category` VARCHAR(45) NULL DEFAULT NULL,
   `birthdate` DATE NULL DEFAULT NULL,
   `gender` VARCHAR(1) NULL DEFAULT NULL,
+  `club` VARCHAR(45) NULL DEFAULT NULL,
   PRIMARY KEY (`pid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1;
+
+
+-- -----------------------------------------------------
+-- Table `judo`.`participants`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `judo`.`participants` (
+  `catid` INT(11) NOT NULL,
+  `participant` VARCHAR(45) NULL DEFAULT NULL,
+  `id` INT(11) NOT NULL,
+  `catevid` INT(11) NOT NULL,
+  PRIMARY KEY (`id`, `catid`, `catevid`),
+  INDEX `category_idx` (`catid` ASC, `catevid` ASC),
+  CONSTRAINT `category`
+    FOREIGN KEY (`catid` , `catevid`)
+    REFERENCES `judo`.`categories` (`catid` , `evid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `person`
+    FOREIGN KEY (`id`)
+    REFERENCES `judo`.`profiles` (`pid`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
 
