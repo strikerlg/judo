@@ -30,7 +30,7 @@ if(isset($_GET['logout'])){
 
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    
+
     <!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 	<link rel="stylesheet" href="css/jquery.fileupload.css">
 	<!-- date picker -->
@@ -131,13 +131,13 @@ if(isset($_GET['logout'])){
 			</div>
 		</div>
 
-    <?php 
+    <?php
     if(isset($_SESSION['admin'])){
     	include('navbar2.php');
     }
 	else{
 		include('navbar.php');
-	} 
+	}
 	?>
 
     <!-- Header Carousel -->
@@ -228,32 +228,32 @@ if(isset($_GET['logout'])){
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="images/gal1.JPG" alt="">
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehopostld.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="images/gal2.JPG" alt="">
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="images/gal3.JPG" alt="">
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="images/gal4.JPG" alt="">
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="images/gal5.JPG" alt="">
                 </a>
             </div>
             <div class="col-md-4 col-sm-6">
                 <a href="portfolio-item.html">
-                    <img class="img-responsive img-portfolio img-hover" src="http://placehold.it/700x450" alt="">
+                    <img class="img-responsive img-portfolio img-hover" src="images/gal6.JPG" alt="">
                 </a>
             </div>
         </div>
@@ -277,7 +277,7 @@ if(isset($_GET['logout'])){
 
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
-    
+
     <!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 	<script src="js/jquery.ui.widget.js"></script>
 	<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
@@ -295,7 +295,7 @@ if(isset($_GET['logout'])){
         interval: 5000 //changes the speed
     })
     </script>
-    
+
     <!-- Script to do image uploads -->
     <script>
     $(document).ready(function(){
