@@ -154,7 +154,7 @@ if(isset($_GET['logout'])){
             <div class="item active">
                 <div class="fill" style="background-image:url('images/slide1.png');"></div>
                 <div class="carousel-caption">
-                    <h2>Wrestling Tracker</h2>
+                    <h2>Judo Tracker</h2>
                 </div>
             </div>
             <div class="item">
