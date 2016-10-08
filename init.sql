@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS `judo`.`events` (
   `organization` VARCHAR(45) NULL DEFAULT NULL,
   `date` DATETIME NOT NULL,
   `pic` VARCHAR(45) NULL DEFAULT NULL,
+  `description` VARCHAR(90) NULL DEFAULT NULL,
   PRIMARY KEY (`evid`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = latin1;
@@ -43,10 +44,10 @@ CREATE TABLE IF NOT EXISTS `judo`.`categories` (
   CONSTRAINT `event_id`
     FOREIGN KEY (`evid`)
     REFERENCES `judo`.`events` (`evid`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
-AUTO_INCREMENT = 4
+AUTO_INCREMENT = 2
 DEFAULT CHARACTER SET = latin1;
 
 
@@ -83,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `judo`.`participants` (
   CONSTRAINT `category`
     FOREIGN KEY (`catid` , `catevid`)
     REFERENCES `judo`.`categories` (`catid` , `evid`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION,
   CONSTRAINT `person`
     FOREIGN KEY (`id`)
