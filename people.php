@@ -47,13 +47,13 @@
         <!-- Page Heading/Breadcrumbs -->
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">Wrestlers
+                <h1 class="page-header">Athletes
                     <small>Directory</small>
                 </h1>
                 <ol class="breadcrumb">
                     <li><a href="index.php">Home</a>
                     </li>
-                    <li class="active">Wrestlers</li>
+                    <li class="active">Athletes</li>
                 </ol>
             </div>
         </div>
@@ -74,7 +74,7 @@
                 echo "<div class=\"well col-md-4 img-portfolio\">
                     <div class=\"col-md-8 col-md-offset-2\">
                         <a href=\"wrestler.php?id=" . $row["pid"] . "\">
-                            <img class=\"img-responsive img-hover\" src=\"images/profile/files/thumbnail/" . $row["pic"] . "\" height=\"200px\" alt=\"\">
+                            <img class=\"img-responsive img-hover\" src=\"images/profile/files/" . $row["pic"] . "\" width=\"100%\" alt=\"\">
                         </a>
                     </div>
                     <h3>
