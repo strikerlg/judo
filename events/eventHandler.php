@@ -58,6 +58,12 @@
 				$mysqli->query($sql);
 				$sql = "DELETE FROM participants WHERE evid = $eventId";
 				$mysqli->query($sql);
+				$files = glob($eventId."-*");
+				if(count($files) > 0){
+					for($i = 0; $i < count($files); $i++){
+						unlink($files[$i]);
+					}
+				}
 				for($i = 1; $i <= count($categories); $i++){
 					$sql = "INSERT INTO categories VALUES($eventId, '". $categories[$i]['title'] . "', $i)";
 					if($mysqli->query($sql)){
