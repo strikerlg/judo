@@ -45,8 +45,6 @@
 			$date = $_POST['date'];
 			$desc = $_POST['description'];
 			//$pic = $_POST['pic'];
-
-			//generate random id for event
 			$eventId = $_POST['evnetid'];
 			//add event to database
 			$sql = "UPDATE events SET title = '" . $title . "', organization = '" . $org . "', date = '" . $date . "', description = '$desc' WHERE evid = " . $eventId;
@@ -56,6 +54,10 @@
 
 			//write files
 			if($result){
+				$sql = "DELETE FROM categories WHERE evid = $eventId";
+				$mysqli->query($sql);
+				$sql = "DELETE FROM participants WHERE evid = $eventId";
+				$mysqli->query($sql);
 				for($i = 1; $i <= count($categories); $i++){
 					$sql = "INSERT INTO categories VALUES($eventId, '". $categories[$i]['title'] . "', $i)";
 					if($mysqli->query($sql)){
@@ -82,7 +84,7 @@
 					}
 				}*/
 			}
-				
+
 			echo json_encode($toReturn);
 		}
 		else{
@@ -127,10 +129,10 @@
 				}
 				$toReturn['success'] = true;
 			}
-				
+
 			echo json_encode($toReturn);
 		}
-		
+
 	}
 	else if(isset($_POST['expandong'])){
 		$evid = $_POST['eventid'];
