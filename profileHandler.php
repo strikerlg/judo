@@ -44,8 +44,8 @@
 							$tmp_name = $_FILES['image']['tmp_name'];
 							$picname = $_FILES['image']['name'];
 							if(move_uploaded_file($tmp_name, "images/profile/files/$picname")){
-								include 'utils.php';
-								makeThumbnails($picname, "images/profile/files");
+								//include 'utils.php';
+								//makeThumbnails($picname, "images/profile/files");
 								$pid = ord($name) . "" . rand(1000, 9999);
 								$toReturn['success'] = "No errors";
 								$toReturn['pid'] = $pid;
@@ -86,17 +86,21 @@
 	}
 	else if($_SERVER['REQUEST_METHOD'] === 'DELETE'){
 		$_DELETE = array();
+		$toReturn['message'] = array();
+		$toReturn['message'][] = "Detected delete type";
 		parse_str(file_get_contents('php://input'), $_DELETE);
 		if(isset($_DELETE['profile'])){
+			$toReturn['message'][] = "Detected a profile to delete";
 			$id = $_DELETE['profile'];
 			$sql = "SELECT pic FROM profiles WHERE pid = $id";
 			$result = $mysqli->query($sql);
 			if($result->num_rows > 0){
+				$toReturn['message'][] = "Got a pic";
 				$pic = $result->fetch_row()[0];
+				$sql = "DELETE FROM profiles WHERE pid = $id";
+				$toReturn['deleted'] = $mysqli->query($sql);
 				if(unlink("images/profile/files/$pic")){
 					unlink("images/profile/files/thumbnail/$pic");
-					$sql = "DELETE FROM profiles WHERE pid = $id";
-					$toReturn['deleted'] = $mysqli->query($sql);
 				}
 			}
 		}
