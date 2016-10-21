@@ -44,8 +44,8 @@
 							$tmp_name = $_FILES['image']['tmp_name'];
 							$picname = $_FILES['image']['name'];
 							if(move_uploaded_file($tmp_name, "images/profile/files/$picname")){
-								include 'utils.php';
-								makeThumbnails($picname, "images/profile/files");
+								//include 'utils.php';
+								//makeThumbnails($picname, "images/profile/files");
 								$pid = ord($name) . "" . rand(1000, 9999);
 								$toReturn['success'] = "No errors";
 								$toReturn['pid'] = $pid;
