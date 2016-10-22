@@ -161,12 +161,14 @@
 			echo file_get_contents("brackets/$eventid-$catid.json");
 		}
 		else{
-			$sql = "SELECT participant FROM judo.participants WHERE catevid = $eventid AND catid = $catid";
+			$sql = "SELECT participant FROM participants WHERE catevid = $eventid AND catid = $catid";
 			$result = $mysqli->query($sql);
 			if($result){
 				$names = $result->fetch_all();
+				//at least one pair
 				$num_teams = 1;
-				for($j = 1; $j*2 <= $result->num_rows; $j *=2){
+				//calculate number of pairs necessary to store number of participants
+				for($j = 1; $j < $result->num_rows; $j *=2){
 					$num_teams = $j;
 				}
 				$teams = array();
